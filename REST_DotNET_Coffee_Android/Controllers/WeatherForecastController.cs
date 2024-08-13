@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace REST_DotNET_Coffee_Android.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("v1/[controller]")]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
