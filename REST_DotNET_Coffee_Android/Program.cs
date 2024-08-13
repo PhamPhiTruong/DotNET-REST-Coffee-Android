@@ -18,9 +18,25 @@ builder.Services.AddDbContext<ApplicationDbContext>(o =>
 #pragma warning restore CS8604 // Possible null reference argument.
 });
 
+// More service
+builder.Services.AddTransient<IProductService, ProductServiceImpl>();
 
+builder.Services.AddTransient<DataInitializer>();
 
 var app = builder.Build();
+
+// Setup database service
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+    var dataInitializer = scope.ServiceProvider.GetRequiredService<DataInitializer>();
+
+    dbContext.Database.EnsureCreated();
+
+    dataInitializer.Init();
+
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
