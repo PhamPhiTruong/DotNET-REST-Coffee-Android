@@ -1,0 +1,6 @@
+@REST_DotNET_Coffee_Android_HostAddress = http://localhost:5261
+
+GET {{REST_DotNET_Coffee_Android_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
