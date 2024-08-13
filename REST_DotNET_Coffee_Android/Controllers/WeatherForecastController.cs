@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using REST_DotNET_Coffee_Android.Entities;
 
 namespace REST_DotNET_Coffee_Android.Controllers
 {

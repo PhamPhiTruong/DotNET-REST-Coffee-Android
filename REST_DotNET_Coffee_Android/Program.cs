@@ -9,9 +9,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<ApplicationDbContext>(o => o.UseMySQL(
+builder.Services.AddDbContext<ApplicationDbContext>(o =>
+{
+#pragma warning disable CS8604 // Possible null reference argument.
+    o.UseMySQL(
     builder.Configuration.GetConnectionString("DefaultConnection")
-    ));
+    );
+#pragma warning restore CS8604 // Possible null reference argument.
+});
 
 
 
