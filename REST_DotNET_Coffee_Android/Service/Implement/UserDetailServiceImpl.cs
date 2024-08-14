@@ -1,7 +1,8 @@
-﻿
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using REST_DotNET_Coffee_Android.Entities;
+
+#nullable disable
 
 public class UserDetailServiceImpl : AService<UserDetail>, IUserDetailService
 {

@@ -2,30 +2,57 @@
 
 public class DataInitializer
 {
-
     private readonly IProductService _productService;
+
     private readonly IUserDetailService _userDetailService;
 
-    public DataInitializer(IProductService productService, IUserDetailService userDetailService)
+    private readonly ICategoryService _categoryService;
+
+    private readonly IIngredientService _ingredientService;
+
+    // Register service
+    public DataInitializer(
+        IProductService productService, 
+        IUserDetailService userDetailService, 
+        ICategoryService categoryService,
+        IIngredientService ingredientService
+        )
     {
         _productService = productService;
 
         _userDetailService = userDetailService;
 
+        _categoryService = categoryService;
+
+        _ingredientService = ingredientService;
     }
 
 
-
+    // Generate default data
+    // Following template:
+    // <SPACE>
+    // <COMMENT> : Generate default <DATA_TYPE>
+    // <CODE>    : <InterfaceService>.Initialize();
+    // <SPACE>
     public void Init()
     {
+        // Generate default categories
+        _categoryService.Initialize();
+
         // Generate default product
         _productService.Initialize();
+
+        // Generate default ingredients
+        _ingredientService.Initialize();
+
         // Generate default user details
         _userDetailService.Initialize();
+
         // Add more data here
 
     }
 
+    // Drop database after Application closed, stopped.
     public void Shutdown(ApplicationDbContext context)
     {
         // Delete all table after shutdown application
