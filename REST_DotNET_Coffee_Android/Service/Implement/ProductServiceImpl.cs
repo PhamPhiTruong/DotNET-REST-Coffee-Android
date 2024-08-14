@@ -18,7 +18,7 @@ public class ProductServiceImpl : AService<Product>, IProductService
 
             if (products != null)
             {
-                _context.Products.AddRange(products);
+                _context.AddRange(products);
                 _context.SaveChanges();
                 _logger.LogInformation("Inserted products from file.");
             }
@@ -31,9 +31,30 @@ public class ProductServiceImpl : AService<Product>, IProductService
         {
             var json = File.ReadAllText("resources\\products.json");
 
-            return JsonConvert.DeserializeObject<List<Product>>(json);
+            var data = JsonConvert.DeserializeObject<Dictionary<string, object>[]>(json);
+
+            var products = new List<Product>();
+
+            foreach (var item in data)
+            {
+                var product = new Product
+                {
+                    Id = Convert.ToInt32(item["id"]),
+                    Name = item["name"].ToString(),
+                    Type = item["type"].ToString(),
+                    BasePrice = Convert.ToDouble(item["base_price"].ToString()),
+                    Quantities = Convert.ToInt32(item["quantities"]),
+                    Active = Convert.ToBoolean(item["active"]),
+                    CategoryId = Convert.ToInt32(item["category_id"].ToString()),
+                    AvatarUrl = item["avatar"].ToString()
+                };
+
+                products.Add(product);
+            }
+
+            return products;
         }
-        catch(Exception ex) 
+        catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading product from file.");
 
