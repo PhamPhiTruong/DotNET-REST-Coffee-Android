@@ -11,6 +11,10 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Product> Products { get; set; }
 
+    public DbSet<Category> Categories { get; set; }
+
+    public DbSet<Ingredient> Ingredients { get; set; }
+
     public DbSet<UserDetail> UserDetails { get; set; }
 
     public DbSet<UserInfo> UserInfos { get; set; }

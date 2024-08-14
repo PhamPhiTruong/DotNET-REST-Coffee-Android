@@ -3,63 +3,54 @@
     "id": "1",
     "name": "Sữa tươi",
     "add_price": "5.0",
-    "type": "MILKS",
-    "enum": "SUA_TUOI"
+    "type": "MILKS"
   },
   {
     "id": "2",
     "name": "Chocolate",
     "add_price": "10.0",
-    "type": "SWEETENERS",
-    "enum": "CHOCOLATE"
+    "type": "SWEETENERS"
   },
   {
     "id": "3",
     "name": "Thạch dừa",
     "add_price": "10.0",
-    "type": "TOPPINGS",
-    "enum": "THACH_DUA"
+    "type": "TOPPINGS"
   },
   {
     "id": "4",
     "name": "Nhiều đường",
     "add_price": "0.0",
-    "type": "SWEETENERS",
-    "enum": "NHIEU_DUONG"
+    "type": "SWEETENERS"
   },
   {
     "id": "5",
     "name": "Ít đường",
     "add_price": "0.0",
-    "type": "SWEETENERS",
-    "enum": "IT_DUONG"
+    "type": "SWEETENERS"
   },
   {
     "id": "6",
     "name": "Trân châu",
     "add_price": "10.0",
-    "type": "TOPPINGS",
-    "enum": "TRAN_CHAU"
+    "type": "TOPPINGS"
   },
   {
     "id": "7",
     "name": "Kem tươi",
     "add_price": "10.0",
-    "type": "TOPPINGS",
-    "enum": "KEM_TUOI"
+    "type": "TOPPINGS"
   },
   {
     "id": "8",
     "name": "Shot Expresso",
     "add_price": "10.0",
-    "type": "TOPPINGS",
-    "enum": "SHOT_EXPRESSO"
+    "type": "TOPPINGS"
   },
   {
     "id": "9",
     "name": "Sốt Caramel",
     "add_price": "10.0",
-    "type": "TOPPINGS",
-    "enum": "SOT_CARAMEL"
+    "type": "TOPPINGS"
   }
 ]

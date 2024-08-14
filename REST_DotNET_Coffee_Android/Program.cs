@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 
+#nullable disable
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -11,19 +13,21 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<ApplicationDbContext>(o =>
 {
-#pragma warning disable CS8604 // Possible null reference argument.
     o.UseMySQL(
     builder.Configuration.GetConnectionString("DefaultConnection")
     );
-#pragma warning restore CS8604 // Possible null reference argument.
 });
 
 // More service
 builder.Services.AddTransient<IProductService, ProductServiceImpl>();
 builder.Services.AddTransient<IUserDetailService, UserDetailServiceImpl>();
+builder.Services.AddTransient<ICategoryService, CategoryServiceImpl>();
+builder.Services.AddTransient<IIngredientService, IngredientServiceImpl>();
 builder.Services.AddTransient<IUserInfoService, UserInfoServiceImpl>();
 builder.Services.AddTransient<IUserService, UserServiceImpl>();
 
+
+// Register Data
 builder.Services.AddTransient<DataInitializer>();
 
 var app = builder.Build();
