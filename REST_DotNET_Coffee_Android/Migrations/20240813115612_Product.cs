@@ -22,7 +22,7 @@ namespace REST_DotNET_Coffee_Android.Migrations
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(type: "longtext", nullable: false),
                     Type = table.Column<string>(type: "longtext", nullable: false),
-                    BasePrice = table.Column<float>(type: "float", nullable: false),
+                    BasePrice = table.Column<float>(type: "double", nullable: false),
                     Quantities = table.Column<int>(type: "int", nullable: false),
                     Active = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: false),

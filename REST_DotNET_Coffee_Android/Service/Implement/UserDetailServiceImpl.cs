@@ -1,9 +1,6 @@
-﻿
-
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using REST_DotNET_Coffee_Android.Entities;
-#nullable disable
 
 #nullable disable
 
@@ -37,9 +34,10 @@ public class UserDetailServiceImpl : AService<UserDetail>, IUserDetailService
 
             var userDetails = jArray.Select(u => new UserDetail
             {
-                expired = 0, // Hoặc lấy từ dữ liệu nếu có
-                enable = 1   // Hoặc lấy từ dữ liệu nếu có
-            }).ToList();
+                Expired = 0, // Hoặc lấy từ dữ liệu nếu có
+                Enable = 1   // Hoặc lấy từ dữ liệu nếu có
+            })
+                .ToList();
 
             return userDetails;
         }
