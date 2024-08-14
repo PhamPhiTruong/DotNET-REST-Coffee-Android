@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
+#nullable disable
 namespace REST_DotNET_Coffee_Android.Entities
 {
     [Table("users")]
@@ -18,11 +18,15 @@ namespace REST_DotNET_Coffee_Android.Entities
         [Required]
         public string email { get; set; }
 
+        [ForeignKey("UserInfo")]
+        public int infoId { get; set; }
+        public UserInfo UserInfo { get; set; }
+
+        [ForeignKey("UserDetail")]
+        public int detailId { get; set; }
+        public UserDetail UserDetail { get; set; }
+        
         public string avatar { get; set; }
-
-        // Các thuộc tính điều hướng
-        public UserInfo infoId { get; set; }
-
-        public UserDetail detailId { get; set; }
+        
     }
 }

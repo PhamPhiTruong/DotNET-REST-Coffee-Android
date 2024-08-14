@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using REST_DotNET_Coffee_Android.Entities;
 
 public class ApplicationDbContext : DbContext
@@ -35,7 +35,7 @@ public class ApplicationDbContext : DbContext
     {
         // Assign Primary Key to HavingIngredients table
         modelBuilder.Entity<HavingIngredient>()
-            .HasKey(hi => new {hi.ProductId, hi.IngredientId});
+            .HasKey(hi => new { hi.ProductId, hi.IngredientId });
 
         //modelBuilder.Entity<HavingIngredient>()
         //    .HasOne(hi => hi.Product)
@@ -51,22 +51,9 @@ public class ApplicationDbContext : DbContext
 
         // Assign Primary Key to AddIngredient table
         modelBuilder.Entity<AddIngredient>()
-            .HasKey(ai => new {ai.OrderItemId, ai.IngredientId});
+            .HasKey(ai => new { ai.OrderItemId, ai.IngredientId });
 
         /* ============================================================================================== */
-
-        // Assign Relation to User table
-        modelBuilder.Entity<User>()
-            .HasOne(u => u.infoId)
-            .WithMany() // Hoặc .WithMany(ui => ui.Users) nếu UserInfo có nhiều User
-            .HasForeignKey("UserInfoId") // Tên cột khóa ngoại sẽ được Entity Framework tạo ra
-            .OnDelete(DeleteBehavior.Restrict); // Hoặc DeleteBehavior.Cascade nếu bạn muốn tự động xóa các bản ghi liên quan
-
-        modelBuilder.Entity<User>()
-            .HasOne(u => u.detailId)
-            .WithMany() // Hoặc .WithMany(ud => ud.Users) nếu UserDetail có nhiều User
-            .HasForeignKey("UserDetailId") // Tên cột khóa ngoại sẽ được Entity Framework tạo ra
-            .OnDelete(DeleteBehavior.Restrict); // Hoặc DeleteBehavior.Cascade nếu bạn muốn tự động xóa các bản ghi liên quan
 
         base.OnModelCreating(modelBuilder);
     }

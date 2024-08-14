@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 using REST_DotNET_Coffee_Android.Entities;
-
+#nullable disable
 public class UserServiceImpl : AService<User>, IUserService
 {
     public UserServiceImpl(ApplicationDbContext context, ILogger<IUserService> logger) : base(context, logger)
@@ -27,40 +26,53 @@ public class UserServiceImpl : AService<User>, IUserService
         try
         {
             var json = File.ReadAllText("resources\\users.json");
-
             JArray jArray = JArray.Parse(json);
-
-            // Giả sử bạn đã có UserInfo và UserDetail trong cơ sở dữ liệu và lấy chúng từ đó
-            var userInfos = _context.UserInfos.ToList();
-
-            var userDetails = _context.UserDetails.ToList();
-
+            Console.WriteLine(jArray.ToString());
             var users = new List<User>();
 
             foreach (var u in jArray)
             {
-
                 var username = u["username"]?.ToString();
-
                 var password = u["password"]?.ToString();
-
                 var email = u["details"]?["email"]?.ToString();
-
                 var avatar = u["details"]?["img"]?.ToString();
+                var phone = u["details"]?["phone"]?.ToString();
 
-                // Lấy UserInfo và UserDetail từ cơ sở dữ liệu
-                var userInfo = userInfos.FirstOrDefault(); // Hoặc chọn UserInfo cụ thể nếu cần
+                // Kiểm tra và tìm UserInfo
+                if (string.IsNullOrEmpty(phone))
+                {
+                    _logger.LogWarning("Phone number is missing in the data.");
+                    continue; // Bỏ qua người dùng này nếu không có số điện thoại
+                }
 
-                var userDetail = userDetails.FirstOrDefault(); // Hoặc chọn UserDetail cụ thể nếu cần
+                var userInfo = _context.UserInfos
+                    .FirstOrDefault(ui => ui.phone == phone);
 
+                if (userInfo == null)
+                {
+                    _logger.LogWarning($"No UserInfo found for phone: {phone}");
+                    continue; // Bỏ qua người dùng này nếu không tìm thấy thông tin
+                }
+
+                // Tìm UserDetail dựa trên tiêu chí cụ thể
+                var userDetail = _context.UserDetails
+                    .FirstOrDefault(ud => ud.expired == 0 && ud.enable == 1);
+
+                if (userDetail == null)
+                {
+                    _logger.LogWarning("No UserDetail found with the specified criteria.");
+                    continue; // Bỏ qua người dùng này nếu không tìm thấy chi tiết
+                }
+
+                // Tạo đối tượng User và thêm vào danh sách
                 var user = new User
                 {
                     userName = username,
                     password = password,
                     email = email,
-                    avatar = avatar,
-                    infoId = userInfo,
-                    detailId = userDetail
+                    infoId = userInfo.id,
+                    detailId = userDetail.id,
+                    avatar = avatar
                 };
 
                 users.Add(user);
@@ -74,4 +86,6 @@ public class UserServiceImpl : AService<User>, IUserService
             return null;
         }
     }
+
+
 }
