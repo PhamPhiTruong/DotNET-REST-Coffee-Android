@@ -18,7 +18,7 @@ public class ProductServiceImpl : AService<Product>, IProductService
 
             if (products != null)
             {
-                _context.Products.AddRange(products);
+                _context.AddRange(products);
                 _context.SaveChanges();
                 _logger.LogInformation("Inserted products from file.");
             }
@@ -30,10 +30,10 @@ public class ProductServiceImpl : AService<Product>, IProductService
         try
         {
             var json = File.ReadAllText("resources\\products.json");
-            Console.WriteLine(json);
+
             return JsonConvert.DeserializeObject<List<Product>>(json);
         }
-        catch(Exception ex) 
+        catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading product from file.");
 
