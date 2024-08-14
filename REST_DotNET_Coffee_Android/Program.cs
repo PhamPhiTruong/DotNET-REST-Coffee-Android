@@ -20,6 +20,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(o =>
 
 // More service
 builder.Services.AddTransient<IProductService, ProductServiceImpl>();
+builder.Services.AddTransient<IUserDetailService, UserDetailServiceImpl>();
 
 builder.Services.AddTransient<DataInitializer>();
 
