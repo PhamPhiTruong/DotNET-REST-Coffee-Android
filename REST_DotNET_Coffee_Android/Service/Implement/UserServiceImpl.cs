@@ -70,7 +70,7 @@ public class UserServiceImpl : AService<User>, IUserService
                     userName = username,
                     password = password,
                     email = email,
-                    infoId = userInfo.id,      
+                    infoId = userInfo.id,
                     detailId = userDetail.id,
                     avatar = avatar
                 };
