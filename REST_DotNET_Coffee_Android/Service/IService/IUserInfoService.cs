@@ -1,6 +1,4 @@
-﻿
-    public interface IUserInfoService :IInitializerData
-    {
-        // Future serveice here
-    }
-
+﻿public interface IUserInfoService : IInitializerData
+{
+    // Future serveice here
+}

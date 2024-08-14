@@ -1,5 +1,4 @@
-﻿
-    public interface IUserDetailService : IInitializerData
-    {
-        //Future service here
-    }
+﻿public interface IUserDetailService : IInitializerData
+{
+    //Future service here
+}
