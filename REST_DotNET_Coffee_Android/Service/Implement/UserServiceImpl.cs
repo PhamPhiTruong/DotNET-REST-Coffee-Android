@@ -27,23 +27,30 @@ public class UserServiceImpl : AService<User>, IUserService
         try
         {
             var json = File.ReadAllText("resources\\users.json");
+
             JArray jArray = JArray.Parse(json);
 
             // Giả sử bạn đã có UserInfo và UserDetail trong cơ sở dữ liệu và lấy chúng từ đó
             var userInfos = _context.UserInfos.ToList();
+
             var userDetails = _context.UserDetails.ToList();
 
             var users = new List<User>();
 
             foreach (var u in jArray)
             {
+
                 var username = u["username"]?.ToString();
+
                 var password = u["password"]?.ToString();
+
                 var email = u["details"]?["email"]?.ToString();
+
                 var avatar = u["details"]?["img"]?.ToString();
 
                 // Lấy UserInfo và UserDetail từ cơ sở dữ liệu
                 var userInfo = userInfos.FirstOrDefault(); // Hoặc chọn UserInfo cụ thể nếu cần
+
                 var userDetail = userDetails.FirstOrDefault(); // Hoặc chọn UserDetail cụ thể nếu cần
 
                 var user = new User

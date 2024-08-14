@@ -25,4 +25,5 @@ public class Product
 
     public string AvatarUrl { get; set; }
 
+    public HavingIngredient HavingIngredient { get; set; }
 }

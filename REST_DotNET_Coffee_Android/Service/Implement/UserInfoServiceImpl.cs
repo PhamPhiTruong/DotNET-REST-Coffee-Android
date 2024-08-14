@@ -29,6 +29,7 @@ public class UserInfoServiceImpl : AService<UserInfo>, IUserInfoService
         try
         {
             var json = File.ReadAllText("resources\\users.json");
+
             JArray jArray = JArray.Parse(json);
 
             var userInfos = jArray.Select(u => new UserInfo
@@ -37,7 +38,8 @@ public class UserInfoServiceImpl : AService<UserInfo>, IUserInfoService
                 lastName = u["details"]?["last_name"]?.ToString(),
                 gender = u["details"]?["gender"]?.ToString(),
                 phone = u["details"]?["phone"]?.ToString()
-            }).ToList();
+            })
+                .ToList();
 
             return userInfos;
         }

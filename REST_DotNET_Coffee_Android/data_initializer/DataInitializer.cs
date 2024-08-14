@@ -5,7 +5,9 @@ public class DataInitializer
     private readonly IProductService _productService;
 
     private readonly IUserDetailService _userDetailService;
+
     private readonly IUserInfoService _userInfoService;
+
     private readonly IUserService _userService;
 
     private readonly ICategoryService _categoryService;
@@ -13,7 +15,13 @@ public class DataInitializer
     private readonly IIngredientService _ingredientService;
 
     // Register service
-    public DataInitializer(IProductService productService, IUserService userService, IUserInfoService userInfoService, IUserDetailService userDetailService, ICategoryService categoryService, IIngredientService ingredientService)
+    public DataInitializer(
+        IUserService userService, 
+        IProductService productService, 
+        IUserInfoService userInfoService, 
+        ICategoryService categoryService, 
+        IUserDetailService userDetailService, 
+        IIngredientService ingredientService)
     {
         _productService = productService;
 
@@ -49,10 +57,14 @@ public class DataInitializer
         // Generate default user details
         _userDetailService.Initialize();
 
-        // Add more data here
+        // Generate default user infos
         _userInfoService.Initialize();
-        
+
+        // Generate default users
         _userService.Initialize();
+        
+        // Add more data here
+
     }
 
     // Drop database after Application closed, stopped.

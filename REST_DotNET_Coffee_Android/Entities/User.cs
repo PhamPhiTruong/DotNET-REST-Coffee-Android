@@ -22,6 +22,7 @@ namespace REST_DotNET_Coffee_Android.Entities
 
         // Các thuộc tính điều hướng
         public UserInfo infoId { get; set; }
+
         public UserDetail detailId { get; set; }
     }
 }
