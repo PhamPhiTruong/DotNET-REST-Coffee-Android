@@ -30,7 +30,7 @@ public class ProductServiceImpl : AService<Product>, IProductService
         try
         {
             var json = File.ReadAllText("resources\\products.json");
-
+            Console.WriteLine(json);
             return JsonConvert.DeserializeObject<List<Product>>(json);
         }
         catch(Exception ex) 

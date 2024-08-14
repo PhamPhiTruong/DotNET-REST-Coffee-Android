@@ -18,7 +18,9 @@ namespace REST_DotNET_Coffee_Android.Entities
         public int infoId { get; set; }
         public UserInfo userInfo { get; set; }
 
-        public UserDetail detailId { get; set; }
+        [ForeignKey("UserDetail")]
+        public int detailId { get; set; }
+        public UserDetail userDetail { get; set; }
 
         public string avatar {  get; set; }
     }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using REST_DotNET_Coffee_Android.Entities;
 
 public class ApplicationDbContext : DbContext
 {
@@ -10,4 +11,5 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Product> Products { get; set; }
 
+    public DbSet<UserDetail> UserDetails { get; set; }
 }

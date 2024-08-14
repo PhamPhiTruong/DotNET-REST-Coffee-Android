@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace REST_DotNET_Coffee_Android.Entities
 {
+    [Table("user_info")]
     public class UserInfo
     {
         [Key]
