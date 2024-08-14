@@ -21,6 +21,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(o =>
 // More service
 builder.Services.AddTransient<IProductService, ProductServiceImpl>();
 builder.Services.AddTransient<IUserDetailService, UserDetailServiceImpl>();
+builder.Services.AddTransient<IUserInfoService, UserInfoServiceImpl>();
+builder.Services.AddTransient<IUserService, UserServiceImpl>();
 
 builder.Services.AddTransient<DataInitializer>();
 

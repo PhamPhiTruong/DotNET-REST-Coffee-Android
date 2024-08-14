@@ -5,13 +5,18 @@ public class DataInitializer
 
     private readonly IProductService _productService;
     private readonly IUserDetailService _userDetailService;
+    private readonly IUserInfoService _userInfoService;
+    private readonly IUserService _userService;
 
-    public DataInitializer(IProductService productService, IUserDetailService userDetailService)
+    public DataInitializer(IProductService productService,IUserService userService,IUserInfoService userInfoService, IUserDetailService userDetailService)
     {
         _productService = productService;
 
         _userDetailService = userDetailService;
 
+        _userInfoService = userInfoService;
+
+        _userService = userService;
     }
 
 
@@ -23,7 +28,9 @@ public class DataInitializer
         // Generate default user details
         _userDetailService.Initialize();
         // Add more data here
-
+        _userInfoService.Initialize();
+        
+        _userService.Initialize();
     }
 
     public void Shutdown(ApplicationDbContext context)
