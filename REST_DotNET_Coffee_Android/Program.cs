@@ -23,6 +23,9 @@ builder.Services.AddTransient<IProductService, ProductServiceImpl>();
 builder.Services.AddTransient<IUserDetailService, UserDetailServiceImpl>();
 builder.Services.AddTransient<ICategoryService, CategoryServiceImpl>();
 builder.Services.AddTransient<IIngredientService, IngredientServiceImpl>();
+builder.Services.AddTransient<IUserInfoService, UserInfoServiceImpl>();
+builder.Services.AddTransient<IUserService, UserServiceImpl>();
+
 
 // Register Data
 builder.Services.AddTransient<DataInitializer>();

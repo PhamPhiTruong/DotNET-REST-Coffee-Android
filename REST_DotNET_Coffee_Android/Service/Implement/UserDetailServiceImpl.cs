@@ -1,6 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿
+
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using REST_DotNET_Coffee_Android.Entities;
+#nullable disable
 
 #nullable disable
 
@@ -14,39 +17,36 @@ public class UserDetailServiceImpl : AService<UserDetail>, IUserDetailService
     {
         if (!_context.UserDetails.Any())
         {
-            var usersDetails = LoadUserDetailsFromFile();
+            var userDetails = LoadUserDetailsFromFile();
 
-            if (usersDetails != null)
+            if (userDetails != null)
             {
-                _context.UserDetails.AddRange(usersDetails);
+                _context.UserDetails.AddRange(userDetails);
                 _context.SaveChanges();
                 _logger.LogInformation("Inserted userDetails from file.");
             }
         }
     }
+
     private List<UserDetail> LoadUserDetailsFromFile()
     {
         try
         {
             var json = File.ReadAllText("resources\\users.json");
             JArray jArray = JArray.Parse(json);
-            Console.WriteLine(jArray);
-            JArray detailUserArray = new JArray(
-                jArray.Select( du => new JObject
-                {
-                    {"expired", 0 },
-                    {"enable", 1 }
-                })
-            );
-            json = detailUserArray.ToString();
-            return JsonConvert.DeserializeObject<List<UserDetail>>(json);
+
+            var userDetails = jArray.Select(u => new UserDetail
+            {
+                expired = 0, // Hoặc lấy từ dữ liệu nếu có
+                enable = 1   // Hoặc lấy từ dữ liệu nếu có
+            }).ToList();
+
+            return userDetails;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error loading userDetail from file.");
-
+            _logger.LogError(ex, "Error loading UserDetail from file.");
             return null;
         }
     }
 }
-

@@ -5,18 +5,15 @@ public class DataInitializer
     private readonly IProductService _productService;
 
     private readonly IUserDetailService _userDetailService;
+    private readonly IUserInfoService _userInfoService;
+    private readonly IUserService _userService;
 
     private readonly ICategoryService _categoryService;
 
     private readonly IIngredientService _ingredientService;
 
     // Register service
-    public DataInitializer(
-        IProductService productService, 
-        IUserDetailService userDetailService, 
-        ICategoryService categoryService,
-        IIngredientService ingredientService
-        )
+    public DataInitializer(IProductService productService, IUserService userService, IUserInfoService userInfoService, IUserDetailService userDetailService, ICategoryService categoryService, IIngredientService ingredientService)
     {
         _productService = productService;
 
@@ -25,6 +22,10 @@ public class DataInitializer
         _categoryService = categoryService;
 
         _ingredientService = ingredientService;
+
+        _userInfoService = userInfoService;
+
+        _userService = userService;
     }
 
 
@@ -49,7 +50,9 @@ public class DataInitializer
         _userDetailService.Initialize();
 
         // Add more data here
-
+        _userInfoService.Initialize();
+        
+        _userService.Initialize();
     }
 
     // Drop database after Application closed, stopped.
