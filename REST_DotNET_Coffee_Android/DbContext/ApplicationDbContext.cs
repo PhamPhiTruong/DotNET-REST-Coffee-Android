@@ -35,6 +35,8 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<CartItem> CartItems { get; set; }
 
+    public DbSet<CartAddIngredients> CartAddIngredients { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Assign Primary Key to HavingIngredients table

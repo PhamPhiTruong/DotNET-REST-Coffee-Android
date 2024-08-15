@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 #nullable disable
 namespace REST_DotNET_Coffee_Android.Entities
 {
+    [Table("cart_items")]
     public class CartItem
     {
         [Key]

@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
+[Table("products")]
 public class Product
 {
     [Key]
