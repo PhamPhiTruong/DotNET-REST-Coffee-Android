@@ -7,74 +7,55 @@ namespace REST_DotNET_Coffee_Android.Controllers
     [Route("v1/[controller]")]
     public class ProductController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
 
-        // Assign DbContext
-        public ProductController(ApplicationDbContext context)
+        private readonly IProductService _productService;
+
+        // Assign Service
+        public ProductController(IProductService productService)
         {
-            _context = context;
+            _productService = productService;
         }
 
-        // GET: all products
+        //// GET: all products
         [HttpGet]
         public async Task<ActionResult<List<Product>>> GetProduct()
         {
-            var products = await _context.Products.ToListAsync();
-
-            return Ok(products);
+            return Ok(await _productService.GetAllProduct());
         }
 
         // GET: a single product
-        [HttpGet("{id}")]
+        [HttpGet("id/{id}")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
-            var product = await _context.Products.FindAsync(id);
+            return Ok(await _productService.GetProductById(id));
+        }
 
-            if (product is null)
-            {
-                return BadRequest("Product not found!");
-            }
+        // GET: product with type
+        [HttpGet("type/{type}")]
+        public async Task<ActionResult<List<Product>>> GetProduct(EProductType type)
+        {
+            return Ok(await _productService.GetProductWithType(type));
+        }
 
-            return Ok(product);
+        // GET: product with category
+        [HttpGet("category/{category}")]
+        public async Task<ActionResult<Product>> GetProduct(string category)
+        {
+            return Ok(await _productService.GetProductByCategory(category));
         }
 
         // POST: add a product
         [HttpPost]
-        public async Task<ActionResult<List<Product>>> AddProduct(Product request)
+        public async Task<ActionResult<List<Product>>> AddProduct([FromBody] ProductRequestDTO request)
         {
-            if (request is null)
-            {
-                return BadRequest("Invalid POST request!");
-            }
-
-            _context.Products.Add(request);
-            _context.SaveChanges();
-
-            return Ok(await GetProduct());
+            return Ok(await _productService.AddProduct(request));
         }
 
         // PUT: modify a product
         [HttpPut]
-        public async Task<ActionResult<List<Product>>> UpdateProduct(Product request)
+        public async Task<ActionResult<List<Product>>> UpdateProduct(ProductRequestDTO request)
         {
-            var product = await _context.Products.FindAsync(request.Id);
-
-            if(product is null)
-            {
-                return BadRequest("Product not found!");
-            }
-
-            product.Name = request.Name;
-            product.AvatarUrl = request.AvatarUrl;
-            product.BasePrice = request.BasePrice;
-            product.Active = request.Active;
-            product.CategoryId = request.CategoryId;
-            product.Type = request.Type;
-            product.Quantities = request.Quantities;
-
-            _context.SaveChanges();
-
-            return Ok(await GetProduct());
+            return Ok(await _productService.UpdateProduct(request));
 
         }
 
@@ -82,17 +63,7 @@ namespace REST_DotNET_Coffee_Android.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<List<Product>>> DeleteProduct(int id)
         {
-            var product = await _context.Products.FindAsync(id);
-
-            if(product is null)
-            {
-                return BadRequest("Product not found!");
-            }
-
-            _context.Products.Remove(product);
-            _context.SaveChanges();
-
-            return Ok(await GetProduct());
+            return Ok(await _productService.DeleteProduct(id));
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using REST_DotNET_Coffee_Android.Entities;
 
 #nullable disable
@@ -95,5 +97,102 @@ public class UserServiceImpl : AService<User>, IUserService
         }
     }
 
+    // Login
+    // Return message login failure if login unsuccessful.
+    // Return token with message if login successful.
+    public async Task<ActionResult<TokenRespondeDTO>> Login(LoginRequestDTO request)
+    {
+
+        if (request is null)
+        {
+            return new BadRequestResult();
+        }
+
+        string Email = request.Email;
+
+        string Password = request.Password;
+
+        var user = await _context.Users
+                            .Where(u => u.Email == Email && u.Password == Password)
+                            .ToListAsync();
+
+        if (user is null || user.Count == 0)
+        {
+            return new TokenRespondeDTO()
+            {
+                Message = "Email and password are not correct or not already register. Please check again."
+            };
+        }
+
+        return new TokenRespondeDTO
+        {
+            Message = "Login successfully.",
+            Token = "Feature on working, please come back later."
+        };
+    }
+
+    // Register
+    // Typically add new user to users table
+    // IF user ALREADY registered, return message $"User with email {Email} already registered."
+    // IF user NOT ALREADY registered, add new user to users table, return message "Register successfully."
+    public async Task<ActionResult<MessageRespondDTO>> Register(RegisterRequestDTO request)
+    {
+        if (request is null)
+        {
+            return new BadRequestResult();
+        }
+
+        string Email = request.Email;
+
+        string Password = request.Password;
+
+        if (string.IsNullOrEmpty(Email))
+        {
+            return new BadRequestResult();
+        }
+
+        var existed = await _context.Users
+                                .Where(u => u.Email == Email)
+                                .ToListAsync();
+
+        if (existed.Count > 0)
+        {
+            return new MessageRespondDTO()
+            {
+                Message = $"User with email {Email} already registered."
+            };
+        }
+
+        UserInfo userInfo = new UserInfo()
+        {
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            Gender = request.Gender,
+            Phone = request.Phone
+        };
+
+        UserDetail userDetail = new UserDetail()
+        {
+            Enable = 1,
+            Expired = 0
+        };
+
+        User user = new User()
+        {
+            UserInfo = userInfo,
+            UserName = request.UserName,
+            Email = request.Email,
+            Password = request.Password,
+            UserDetail = userDetail
+        };
+
+        _context.Users.Add(user);
+        _context.SaveChanges();
+
+        return new MessageRespondDTO()
+        {
+            Message = "Register successfully, please login."
+        };
+    }
 
 }
