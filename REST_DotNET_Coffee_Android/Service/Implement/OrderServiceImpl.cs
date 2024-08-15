@@ -1,7 +1,6 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MySqlX.XDevAPI.Common;
+﻿using Microsoft.EntityFrameworkCore;
+
+#nullable disable
 
 public class OrderServiceImpl : AService<OrderResponseDTO>, IOrderService
 {
@@ -15,10 +14,10 @@ public class OrderServiceImpl : AService<OrderResponseDTO>, IOrderService
         try
         {
             // Lấy userId
-            int userId = ord.userId;
+            int userId = ord.UserId;
 
             // Lấy paymentId
-            var payment = await _context.PaymentMethods.FirstOrDefaultAsync(pm => pm.Name.Equals(ord.methodPay));
+            var payment = await _context.PaymentMethods.FirstOrDefaultAsync(pm => pm.Name.Equals(ord.MethodPay));
 
             int paymentId = payment.Id;
 
@@ -32,16 +31,17 @@ public class OrderServiceImpl : AService<OrderResponseDTO>, IOrderService
             };
 
             _context.Orders.Add(order);
-
             await _context.SaveChangesAsync();
+
             int orderId = order.Id;
 
-            List<OrderItemRequestDTO> list = ord.orderItems;
+            List<OrderItemRequestDTO> list = ord.OrderItems;
+
             foreach (var item in list)
             {
-                int quantity = item.quantity;
+                int quantity = item.Quantity;
 
-                int productId = item.productId;
+                int productId = item.ProductId;
 
                 var orderItem = new OrderItem
                 {
@@ -51,11 +51,11 @@ public class OrderServiceImpl : AService<OrderResponseDTO>, IOrderService
                 };
 
                 _context.OrderItems.Add(orderItem);
-
                 await _context.SaveChangesAsync();
+
                 int orderItemId = orderItem.Id;
 
-                List<String> listIngredients = item.addIngredients;
+                List<String> listIngredients = item.AddIngredients;
 
                 foreach (var ingre in listIngredients)
                 {
@@ -74,18 +74,15 @@ public class OrderServiceImpl : AService<OrderResponseDTO>, IOrderService
             }
 
             await _context.SaveChangesAsync();
-
             order.TotalPrice = 100;
             _context.Orders.Update(order);
-
             await _context.SaveChangesAsync();
 
             return "Order created successfully";
         }
         catch (Exception ex) {
             return $"Failed to create order: {ex.Message}";
-        }
-              
+        }              
     }
 
     public async Task<OrderResponseDTO> GetOrder(int userId)
@@ -113,15 +110,19 @@ public class OrderServiceImpl : AService<OrderResponseDTO>, IOrderService
         foreach (var orderitem in orderitems)
         {
             var product = products.FirstOrDefault(p => p.Id == orderitem.ProductId);
+
             payMethod = paymentMethods.FirstOrDefault(p => p.Id == orders.PaymentId).Name; 
+
             if (product != null)
             {
                 List<string> ingredientList = new List<string>();
+
                 double price = product.BasePrice;
 
                 foreach (var aIngredient in addIngredients.Where(ai => ai.OrderItemId == orderitem.Id))
                 {
                     var ingredient = ingredients.FirstOrDefault(i => i.Id == aIngredient.IngredientId);
+
                     if (ingredient != null)
                     {
                         ingredientList.Add(ingredient.Name);
@@ -149,8 +150,4 @@ public class OrderServiceImpl : AService<OrderResponseDTO>, IOrderService
 
         return result;
     }
-
-
-
-
 }

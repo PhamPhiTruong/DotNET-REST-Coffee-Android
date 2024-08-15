@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using Org.BouncyCastle.Asn1.Ocsp;
-using REST_DotNET_Coffee_Android.Migrations;
 
 #nullable disable
 
@@ -236,6 +234,9 @@ public class ProductServiceImpl : AService<Product>, IProductService
         return await GetAllProduct();
     }
 
+    // Delete a product by Id
+    // IF product not exist return BadRequestResult
+    // IF product exist delete it.
     public async Task<ActionResult<List<ProductRespondeDTO>>> DeleteProduct(int id)
     {
         if (id < 0)
