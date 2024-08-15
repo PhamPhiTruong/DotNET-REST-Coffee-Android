@@ -21,6 +21,7 @@ public class Product
 
     [ForeignKey("Category")]
     public int CategoryId { get; set; }
+
     public Category Category { get; set; }
 
     public string AvatarUrl { get; set; }

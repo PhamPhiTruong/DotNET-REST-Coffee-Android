@@ -7,15 +7,15 @@ namespace REST_DotNET_Coffee_Android.Entities
     public class UserInfo
     {
         [Key]
-        public int id { get; set; }
+        public int Id { get; set; }
 
-        public string firstName { get; set; }
+        public string FirstName { get; set; } = string.Empty;
 
-        public string lastName { get; set; }
+        public string LastName { get; set; } = string.Empty;
 
-        public string gender { get; set; }
+        public string Gender { get; set; } = string.Empty;
 
-        public String phone { get; set; }
+        public String Phone { get; set; } = string.Empty;
 
     }
 }

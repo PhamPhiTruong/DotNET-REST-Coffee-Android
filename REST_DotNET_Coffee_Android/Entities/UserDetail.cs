@@ -8,11 +8,11 @@ namespace REST_DotNET_Coffee_Android.Entities
     {
 
         [Key]
-        public int id { get; set; }
+        public int Id { get; set; }
 
-        public int expired {  get; set; }
+        public int Expired {  get; set; }
 
-        public int enable { get; set; }
+        public int Enable { get; set; }
 
     }
 }
