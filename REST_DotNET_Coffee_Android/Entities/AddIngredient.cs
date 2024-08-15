@@ -9,12 +9,12 @@ public class AddIngredient
     [ForeignKey("OrderItem")]
     public int OrderItemId { get; set; }
 
-    public OrderItem OrderItem { get; set; } = new OrderItem();
+    public OrderItem OrderItem { get; set; }
 
     [Required]
     [ForeignKey("Ingredient")]
     
     public int IngredientId { get; set; }
 
-    public Ingredient Ingredient { get; set; } = new Ingredient();
+    public Ingredient Ingredient { get; set; }
 }
