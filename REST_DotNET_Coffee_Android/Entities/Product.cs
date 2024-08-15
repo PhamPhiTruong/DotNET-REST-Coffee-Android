@@ -26,6 +26,4 @@ public class Product
     public Category Category { get; set; }
 
     public string AvatarUrl { get; set; } = String.Empty;
-
-    public HavingIngredient HavingIngredient { get; set; }
 }

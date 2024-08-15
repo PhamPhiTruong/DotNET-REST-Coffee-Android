@@ -40,8 +40,6 @@ public class ApplicationDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Assign Primary Key to HavingIngredients table
-        modelBuilder.Entity<HavingIngredient>()
-            .HasKey(hi => new { hi.ProductId, hi.IngredientId });
 
         //modelBuilder.Entity<HavingIngredient>()
         //    .HasOne(hi => hi.Product)
@@ -54,10 +52,6 @@ public class ApplicationDbContext : DbContext
         //    .HasForeignKey("IngredientId"); // Assign ForeignKey
 
         /* ============================================================================================== */
-
-        // Assign Primary Key to AddIngredient table
-        modelBuilder.Entity<AddIngredient>()
-            .HasKey(ai => new { ai.OrderItemId, ai.IngredientId });
 
         /* ============================================================================================== */
 
