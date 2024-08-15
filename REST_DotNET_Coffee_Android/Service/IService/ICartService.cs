@@ -1,4 +1,4 @@
 ﻿public interface ICartService : IInitializerData
 {
-    // Future serveice here
+    // Future service here
 }
