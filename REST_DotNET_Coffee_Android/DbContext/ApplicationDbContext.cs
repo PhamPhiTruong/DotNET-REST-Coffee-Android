@@ -41,15 +41,15 @@ public class ApplicationDbContext : DbContext
     {
         // Assign Primary Key to HavingIngredients table
 
-        modelBuilder.Entity<HavingIngredient>()
-            .HasOne(hi => hi.Product)
-            .WithMany()
-            .HasForeignKey("ProductId"); // Assign ForeignKey
+        //modelBuilder.Entity<HavingIngredient>()
+        //    .HasOne(hi => hi.Product)
+        //    .WithMany()
+        //    .HasForeignKey("ProductId"); // Assign ForeignKey
 
-        modelBuilder.Entity<HavingIngredient>()
-            .HasOne(hi => hi.Ingredient)
-            .WithMany()
-            .HasForeignKey("IngredientId"); // Assign ForeignKey
+        //modelBuilder.Entity<HavingIngredient>()
+        //    .HasOne(hi => hi.Ingredient)
+        //    .WithMany()
+        //    .HasForeignKey("IngredientId"); // Assign ForeignKey
 
         /* ============================================================================================== */
 
