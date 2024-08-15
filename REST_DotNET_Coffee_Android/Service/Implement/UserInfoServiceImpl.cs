@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using REST_DotNET_Coffee_Android.Entities;
+
 #nullable disable
 
 public class UserInfoServiceImpl : AService<UserInfo>, IUserInfoService
@@ -29,15 +30,17 @@ public class UserInfoServiceImpl : AService<UserInfo>, IUserInfoService
         try
         {
             var json = File.ReadAllText("resources\\users.json");
+
             JArray jArray = JArray.Parse(json);
 
             var userInfos = jArray.Select(u => new UserInfo
             {
-                firstName = u["details"]?["first_name"]?.ToString(),
-                lastName = u["details"]?["last_name"]?.ToString(),
-                gender = u["details"]?["gender"]?.ToString(),
-                phone = u["details"]?["phone"]?.ToString()
-            }).ToList();
+                FirstName = u["details"]?["first_name"]?.ToString(),
+                LastName = u["details"]?["last_name"]?.ToString(),
+                Gender = u["details"]?["gender"]?.ToString(),
+                Phone = u["details"]?["phone"]?.ToString()
+            })
+                .ToList();
 
             return userInfos;
         }

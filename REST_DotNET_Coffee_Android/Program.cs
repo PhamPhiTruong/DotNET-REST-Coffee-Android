@@ -14,18 +14,16 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>(o =>
 {
     o.UseMySQL(
-    builder.Configuration.GetConnectionString("DefaultConnection")
-    );
+    builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
 // More service
-builder.Services.AddTransient<IProductService, ProductServiceImpl>();
 builder.Services.AddTransient<IUserDetailService, UserDetailServiceImpl>();
-builder.Services.AddTransient<ICategoryService, CategoryServiceImpl>();
 builder.Services.AddTransient<IIngredientService, IngredientServiceImpl>();
+builder.Services.AddTransient<ICategoryService, CategoryServiceImpl>();
 builder.Services.AddTransient<IUserInfoService, UserInfoServiceImpl>();
+builder.Services.AddTransient<IProductService, ProductServiceImpl>();
 builder.Services.AddTransient<IUserService, UserServiceImpl>();
-
 
 // Register Data
 builder.Services.AddTransient<DataInitializer>();
@@ -42,7 +40,6 @@ using (var scope = app.Services.CreateScope())
     dbContext.Database.EnsureCreated();
 
     dataInitializer.Init();
-
 }
 
 // Configure the HTTP request pipeline.

@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json.Linq;
 using REST_DotNET_Coffee_Android.Entities;
+
 #nullable disable
+
 public class UserServiceImpl : AService<User>, IUserService
 {
     public UserServiceImpl(ApplicationDbContext context, ILogger<IUserService> logger) : base(context, logger)
@@ -26,16 +28,22 @@ public class UserServiceImpl : AService<User>, IUserService
         try
         {
             var json = File.ReadAllText("resources\\users.json");
+
             JArray jArray = JArray.Parse(json);
             Console.WriteLine(jArray.ToString());
+
             var users = new List<User>();
 
             foreach (var u in jArray)
             {
                 var username = u["username"]?.ToString();
+
                 var password = u["password"]?.ToString();
+
                 var email = u["details"]?["email"]?.ToString();
+
                 var avatar = u["details"]?["img"]?.ToString();
+
                 var phone = u["details"]?["phone"]?.ToString();
 
                 // Kiểm tra và tìm UserInfo
@@ -46,7 +54,7 @@ public class UserServiceImpl : AService<User>, IUserService
                 }
 
                 var userInfo = _context.UserInfos
-                    .FirstOrDefault(ui => ui.phone == phone);
+                    .FirstOrDefault(ui => ui.Phone == phone);
 
                 if (userInfo == null)
                 {
@@ -56,7 +64,7 @@ public class UserServiceImpl : AService<User>, IUserService
 
                 // Tìm UserDetail dựa trên tiêu chí cụ thể
                 var userDetail = _context.UserDetails
-                    .FirstOrDefault(ud => ud.expired == 0 && ud.enable == 1);
+                    .FirstOrDefault(ud => ud.Expired == 0 && ud.Enable == 1);
 
                 if (userDetail == null)
                 {
@@ -67,12 +75,12 @@ public class UserServiceImpl : AService<User>, IUserService
                 // Tạo đối tượng User và thêm vào danh sách
                 var user = new User
                 {
-                    userName = username,
-                    password = password,
-                    email = email,
-                    infoId = userInfo.id,      
-                    detailId = userDetail.id,
-                    avatar = avatar
+                    UserName = username,
+                    Password = password,
+                    Email = email,
+                    InfoId = userInfo.Id,
+                    DetailId = userDetail.Id,
+                    Avatar = avatar
                 };
 
                 users.Add(user);
