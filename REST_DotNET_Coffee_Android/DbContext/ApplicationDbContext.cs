@@ -31,11 +31,15 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<User> Users { get; set; }
 
+    public DbSet<Cart> Carts { get; set; }
+
+    public DbSet<CartItem> CartItems { get; set; }
+
+    public DbSet<CartAddIngredients> CartAddIngredients { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Assign Primary Key to HavingIngredients table
-        modelBuilder.Entity<HavingIngredient>()
-            .HasKey(hi => new { hi.ProductId, hi.IngredientId });
 
         //modelBuilder.Entity<HavingIngredient>()
         //    .HasOne(hi => hi.Product)
@@ -48,10 +52,6 @@ public class ApplicationDbContext : DbContext
         //    .HasForeignKey("IngredientId"); // Assign ForeignKey
 
         /* ============================================================================================== */
-
-        // Assign Primary Key to AddIngredient table
-        modelBuilder.Entity<AddIngredient>()
-            .HasKey(ai => new { ai.OrderItemId, ai.IngredientId });
 
         /* ============================================================================================== */
 

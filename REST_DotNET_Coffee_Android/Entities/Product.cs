@@ -3,15 +3,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
+[Table("products")]
 public class Product
 {
     [Key]
     public int Id { get; set; }
 
     [Required]
-    public string Name { get; set; }
+    public string Name { get; set; } = String.Empty;
 
-    public string Type { get; set; }
+    public string Type { get; set; } = String.Empty;
 
     public double BasePrice { get; set; }
 
@@ -24,7 +25,5 @@ public class Product
 
     public Category Category { get; set; }
 
-    public string AvatarUrl { get; set; }
-
-    public HavingIngredient HavingIngredient { get; set; }
+    public string AvatarUrl { get; set; } = String.Empty;
 }

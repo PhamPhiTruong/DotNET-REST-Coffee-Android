@@ -1,17 +1,22 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+#nullable disable
+
+[Table("having_ingredients")]
+[PrimaryKey(nameof(ProductId),nameof(IngredientId))]
 public class HavingIngredient
 {
-    [Key]
-    [Column(Order = 1)]
+    [ForeignKey("Product")]
+    [Required]
     public int ProductId { get; set; }
 
-    [Key]
-    [Column(Order = 2)]
+    public Product Product { get; set; }
+
+    [ForeignKey("Ingredient")]
+    [Required]
     public int IngredientId { get; set; }
 
-    public Product Product { get; set; } = new Product();
-
-    public Ingredient Ingredient { get; set; } = new Ingredient();
+    public Ingredient Ingredient { get; set; }
 }

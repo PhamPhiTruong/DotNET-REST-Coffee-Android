@@ -12,13 +12,13 @@ namespace REST_DotNET_Coffee_Android.Entities
         public int Id { get; set; }
 
         [Required]
-        public string UserName { get; set; }
+        public string UserName { get; set; } = String.Empty;
 
         [Required]
-        public string Password { get; set; }
+        public string Password { get; set; } = String.Empty;
 
         [Required]
-        public string Email { get; set; }
+        public string Email { get; set; } = String.Empty;
 
         [ForeignKey("UserInfo")]
         public int InfoId { get; set; }
@@ -29,8 +29,8 @@ namespace REST_DotNET_Coffee_Android.Entities
         public int DetailId { get; set; }
 
         public UserDetail UserDetail { get; set; }
-        
-        public string Avatar { get; set; }
-        
+
+        public string Avatar { get; set; } = String.Empty;
+
     }
 }

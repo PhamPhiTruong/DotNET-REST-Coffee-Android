@@ -30,15 +30,22 @@ public class UserDetailServiceImpl : AService<UserDetail>, IUserDetailService
         try
         {
             var json = File.ReadAllText("resources\\users.json");
-            JArray jArray = JArray.Parse(json);
 
-            var userDetails = jArray.Select(u => new UserDetail
+            var data = JsonConvert.DeserializeObject<Dictionary<string, object>[]>(json);
+
+            var userDetails = new List<UserDetail>();
+
+            foreach (var item in data) 
             {
-                Expired = 0, // Hoặc lấy từ dữ liệu nếu có
-                Enable = 1   // Hoặc lấy từ dữ liệu nếu có
-            })
-                .ToList();
+                var userDetail = new UserDetail
+                {
+                    Expired = 0, // Hoặc lấy từ dữ liệu nếu có
+                    Enable = 1   // Hoặc lấy từ dữ liệu nếu có 
+                };
 
+                userDetails.Add(userDetail);
+            }
+            
             return userDetails;
         }
         catch (Exception ex)
