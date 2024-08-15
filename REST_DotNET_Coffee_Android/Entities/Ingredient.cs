@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
+#nullable disable
 [Table("ingredients")]
 public class Ingredient
 {
@@ -13,5 +13,4 @@ public class Ingredient
     public double AddPrice { get; set; }
 
     public string Type { get; set; } = string.Empty;
-
 }
