@@ -1,5 +1,7 @@
 ﻿public class OrderRequestDTO
 {
-    int userId {  get; set; }
-    List<OrderItemRequestDTO> orderItems { get; set; }
+    public int userId {  get; set; }
+
+    public String methodPay {  get; set; }
+    public List<OrderItemRequestDTO> orderItems { get; set; }
 }

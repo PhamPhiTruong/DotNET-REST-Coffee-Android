@@ -1,9 +1,9 @@
 ﻿public class OrderItemRequestDTO
 {
-    int productId {  get; set; }
+    public int productId {  get; set; }
 
-    int quantity { get; set; }
+    public int quantity { get; set; }
 
-    List<String> addIngredients { get; set; }
+    public List<String> addIngredients { get; set; }
 
 }
