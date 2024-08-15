@@ -13,12 +13,14 @@ namespace REST_DotNET_Coffee_Android.Controllers
             _userService = userService;
         }
 
+        // POST: Login request
         [HttpPost("login/")]
         public async Task<ActionResult<TokenRespondeDTO>> Login([FromBody] LoginRequestDTO request)
         {
             return Ok(await _userService.Login(request));
         }
 
+        // POST: Register request
         [HttpPost("register/")]
         public async Task<ActionResult<MessageRespondDTO>> Register([FromBody] RegisterRequestDTO regRequest)
         {

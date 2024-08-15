@@ -1,4 +1,6 @@
-﻿public class OrderResponseDTO
+﻿#nullable disable
+
+public class OrderResponseDTO
 {
     public String PaymentMethod {  get; set; }
 

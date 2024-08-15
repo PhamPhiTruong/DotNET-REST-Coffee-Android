@@ -1,4 +1,6 @@
-﻿public class OrderItemResponseDTO
+﻿#nullable disable
+
+public class OrderItemResponseDTO
 {
     public String ProductName { get; set; }
 

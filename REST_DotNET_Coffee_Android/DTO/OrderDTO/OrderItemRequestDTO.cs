@@ -1,9 +1,11 @@
-﻿public class OrderItemRequestDTO
+﻿#nullable disable
+
+public class OrderItemRequestDTO
 {
-    public int productId {  get; set; }
+    public int ProductId {  get; set; }
 
-    public int quantity { get; set; }
+    public int Quantity { get; set; }
 
-    public List<String> addIngredients { get; set; }
+    public List<String> AddIngredients { get; set; }
 
 }

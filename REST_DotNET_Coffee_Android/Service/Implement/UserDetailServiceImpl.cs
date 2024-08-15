@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using REST_DotNET_Coffee_Android.Entities;
 
 #nullable disable

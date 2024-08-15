@@ -1,7 +1,9 @@
 ﻿using REST_DotNET_Coffee_Android.Entities;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
 #nullable disable
+
 [Table("orders")]
 public class Order
 {

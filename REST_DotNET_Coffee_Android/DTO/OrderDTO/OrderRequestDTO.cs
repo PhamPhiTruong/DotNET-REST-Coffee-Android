@@ -1,7 +1,11 @@
-﻿public class OrderRequestDTO
-{
-    public int userId {  get; set; }
+﻿#nullable disable
 
-    public String methodPay {  get; set; }
-    public List<OrderItemRequestDTO> orderItems { get; set; }
+public class OrderRequestDTO
+{
+    public int UserId {  get; set; }
+
+    public String MethodPay {  get; set; }
+
+    public List<OrderItemRequestDTO> OrderItems { get; set; }
+
 }

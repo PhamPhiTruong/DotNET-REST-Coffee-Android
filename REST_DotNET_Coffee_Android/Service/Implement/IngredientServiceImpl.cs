@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.IO;
+﻿using Newtonsoft.Json;
 
 #nullable disable
 
@@ -57,5 +54,4 @@ public class IngredientServiceImpl : AService<Ingredient>, IIngredientService
             return null;
         }
     }
-
 }
