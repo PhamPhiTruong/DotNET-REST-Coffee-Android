@@ -5,7 +5,7 @@
 
         public int id { get; set; }
 
-        public User userId { get; set; } = new User();
+        public User userId { get; set; }
 
     }
 }

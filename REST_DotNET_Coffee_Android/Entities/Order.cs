@@ -15,7 +15,7 @@ public class Order
     [ForeignKey("PaymentMethod")]
     public int PaymentId { get; set; }
 
-    public PaymentMethod PaymentMethod { get; set; } = new PaymentMethod();
+    public PaymentMethod PaymentMethod { get; set; }
 
     public double TotalPrice { get; set; }
 

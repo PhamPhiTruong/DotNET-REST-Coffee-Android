@@ -14,5 +14,4 @@ public class Ingredient
 
     public string Type { get; set; } = string.Empty;
 
-    public HavingIngredient HavingIngredient { get; set; } = new HavingIngredient();
 }

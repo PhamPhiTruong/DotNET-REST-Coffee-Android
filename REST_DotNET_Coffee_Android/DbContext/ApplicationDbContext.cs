@@ -37,15 +37,15 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<HavingIngredient>()
             .HasKey(hi => new { hi.ProductId, hi.IngredientId });
 
-        //modelBuilder.Entity<HavingIngredient>()
-        //    .HasOne(hi => hi.Product)
-        //    .WithMany()
-        //    .HasForeignKey("ProductId"); // Assign ForeignKey
+        modelBuilder.Entity<HavingIngredient>()
+            .HasOne(hi => hi.Product)
+            .WithMany()
+            .HasForeignKey("ProductId"); // Assign ForeignKey
 
-        //modelBuilder.Entity<HavingIngredient>()
-        //    .HasOne(hi => hi.Ingredient)
-        //    .WithMany()
-        //    .HasForeignKey("IngredientId"); // Assign ForeignKey
+        modelBuilder.Entity<HavingIngredient>()
+            .HasOne(hi => hi.Ingredient)
+            .WithMany()
+            .HasForeignKey("IngredientId"); // Assign ForeignKey
 
         /* ============================================================================================== */
 
