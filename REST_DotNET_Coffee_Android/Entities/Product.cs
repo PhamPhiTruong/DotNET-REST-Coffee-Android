@@ -12,7 +12,7 @@ public class Product
     [Required]
     public string Name { get; set; } = String.Empty;
 
-    public string Type { get; set; } = String.Empty;
+    public string Type { get; set; } = string.Empty;
 
     public double BasePrice { get; set; }
 
