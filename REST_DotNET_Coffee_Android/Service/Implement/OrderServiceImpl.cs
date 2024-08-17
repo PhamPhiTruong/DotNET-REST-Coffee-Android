@@ -2,7 +2,7 @@
 
 #nullable disable
 
-public class OrderServiceImpl : AService<OrderResponseDTO>, IOrderService
+public class OrderServiceImpl : AService<Order>, IOrderService
 {
 
     public OrderServiceImpl(ApplicationDbContext context, ILogger<OrderServiceImpl> logger) : base(context, logger)

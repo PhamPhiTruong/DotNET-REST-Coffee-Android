@@ -31,7 +31,7 @@ namespace REST_DotNET_Coffee_Android.Controllers
         }
 
         // GET: product with type
-        [HttpGet("type/{type}")]
+        [HttpGet("type/")]
         public async Task<ActionResult<List<Product>>> GetProduct(EProductType type)
         {
             return Ok(await _productService.GetProductWithType(type));

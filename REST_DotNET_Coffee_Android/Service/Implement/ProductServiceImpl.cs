@@ -60,7 +60,7 @@ public class ProductServiceImpl : AService<Product>, IProductService
             return null;
         }
     }
-
+        
     // From list of Product to list of DTO
     private static List<ProductRespondeDTO> ToDTO(List<Product> products)
     {
@@ -74,7 +74,7 @@ public class ProductServiceImpl : AService<Product>, IProductService
             {
                 Id = p.Id,
                 Name = p.Name,
-                Type = ProductTypeExtension.ToType(p.Type),
+                Type = p.Type,
                 Active = Convert.ToBoolean(p.Active),
                 AvatarUrl = p.AvatarUrl,
                 BasePrice = Convert.ToDouble(p.BasePrice),
@@ -130,9 +130,30 @@ public class ProductServiceImpl : AService<Product>, IProductService
         return ToDTO(products);
     }
 
-    // Get product by id and turns it to DTO
+    // Summary:
+    //     Finds an product with the given primary key values. If an product with the given
+    //     primary key values is being tracked by the context, then it is returned immediately
+    //     without making a request to the database. Otherwise, a query is made to the database
+    //     for an product with the given primary key values and this product, if found, is
+    //     attached to the context and returned. If no product is found, then null is returned.
+    //
+    //
+    // Parameters:
+    //   keyValues:
+    //     The values of the primary key for the product to be found.
+    //
+    // Returns:
+    //     The product found, or null.
+    //
+    // Remarks:
+    //     See Using GetAllProduct and GetProductById for more information and examples.
     public async Task<ActionResult<ProductRespondeDTO>> GetProductById(int id)
     {
+        if (id <= 0)
+        {
+            throw new InvalidIdException($"Invalid id {id}, an id should not be smaller than 0.");
+        }
+
         var product = await _context.Products.FindAsync(id);
 
         if (product is null)
@@ -144,7 +165,7 @@ public class ProductServiceImpl : AService<Product>, IProductService
         {
             Id = id,
             Name = product.Name,
-            Type = ProductTypeExtension.ToType(product.Type),
+            Type = product.Type,
             Active = Convert.ToBoolean(product.Active),
             AvatarUrl = product.AvatarUrl,
             BasePrice = Convert.ToDouble(product.BasePrice),
@@ -158,8 +179,11 @@ public class ProductServiceImpl : AService<Product>, IProductService
     // IF UNSUCCEED Return BadRequestResult
     public async Task<ActionResult<List<ProductRespondeDTO>>> GetProductWithType(EProductType type)
     {
+
+        string typeStr = ProductTypeExtension.ToString(type);
+
         var products = await _context.Products
-                                .Where(p => ProductTypeExtension.ToType(p.Type) == type)
+                                .Where(p => p.Type == typeStr)
                                 .ToListAsync();
 
         return ToDTO(products);

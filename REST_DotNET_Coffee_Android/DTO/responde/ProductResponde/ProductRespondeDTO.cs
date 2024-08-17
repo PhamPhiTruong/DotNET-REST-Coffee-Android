@@ -4,7 +4,7 @@
 
     public string Name { get; set; } = String.Empty;
 
-    public EProductType Type { get; set; }
+    public string Type { get; set; } = string.Empty;
 
     public double BasePrice { get; set; }
 
