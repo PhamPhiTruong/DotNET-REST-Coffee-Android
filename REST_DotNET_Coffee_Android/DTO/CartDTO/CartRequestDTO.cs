@@ -1,4 +1,5 @@
-﻿public class CartRequestDTO
+﻿#nullable disable
+public class CartRequestDTO
 {
     public int UserId { get; set; }
 

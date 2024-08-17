@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using REST_DotNET_Coffee_Android.Entities;
 
+#nullable disable
 public class CartServiceImpl : AService<Cart>, ICartService
 {
     public CartServiceImpl(ApplicationDbContext context, ILogger<CartServiceImpl> logger) : base(context, logger)

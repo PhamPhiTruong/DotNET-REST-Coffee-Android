@@ -1,7 +1,7 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
 
-[Route("order/[controller]")]
+[Route("order/")]
 [ApiController]
 public class OrderController : ControllerBase
 {
@@ -12,7 +12,7 @@ public class OrderController : ControllerBase
         _orderService = orderService;
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("getOrder/")]
     public async Task<OrderResponseDTO> GetOrder(int id)
     {
         var result = await _orderService.GetOrder(id);
@@ -20,7 +20,7 @@ public class OrderController : ControllerBase
         return result;
     }
 
-    [HttpPut]
+    [HttpPut("createOrder/")]
     public async Task<string> Order([FromBody] OrderRequestDTO orderRequestDTO)
     { 
         // Tạo đơn hàng thông qua dịch vụ
