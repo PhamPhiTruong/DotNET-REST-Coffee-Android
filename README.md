@@ -2,7 +2,7 @@
 
 This project is part of the .NET Programming course. The aim of this project is to build a API using the ASP.NET Framework for a Mobile Coffee Store Application (Android).
 
-The related coffee application project can be found [here](https://github.com/tuan0919/coffee-mobile{:target="_blank"}).
+The related coffee application project can be found [here]([https://github.com/tuan0919/coffee-mobile{:target="_blank"}](https://github.com/tuan0919/coffee-mobile)).
 
 ## Project .NET SDK
 
