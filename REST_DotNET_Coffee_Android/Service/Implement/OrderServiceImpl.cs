@@ -74,7 +74,26 @@ public class OrderServiceImpl : AService<OrderResponseDTO>, IOrderService
             }
 
             await _context.SaveChangesAsync();
-            order.TotalPrice = 100;
+
+            double TrueTotal = 0;
+
+            foreach (var item in ord.OrderItems)
+            {
+                double Value = 0;
+                var Product = await _context.Products.FirstOrDefaultAsync(p => p.Id == item.ProductId);
+                Value += Product.BasePrice;
+
+                foreach (var ingre in item.AddIngredients)
+                {
+                    var Ingredient = await _context.Ingredients.FirstOrDefaultAsync(i => i.Name == ingre);
+                    Value += Ingredient.AddPrice;
+                }
+
+                Value = Value * item.Quantity;
+                TrueTotal += Value;
+            }
+
+            order.TotalPrice = TrueTotal;
             _context.Orders.Update(order);
             await _context.SaveChangesAsync();
 
