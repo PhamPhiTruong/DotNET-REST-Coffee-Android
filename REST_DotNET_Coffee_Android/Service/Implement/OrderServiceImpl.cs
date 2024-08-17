@@ -9,17 +9,52 @@ public class OrderServiceImpl : AService<Order>, IOrderService
     {
     }
 
+    //
+    // Summary:
+    //     Create an order with the given order Data Transfer Oject (DTO). If an order with the given
+    //     DTO's is null, then it is returned null. If order items attached is null, then it is returned null.
+    //     Otherwise, an insert command is made to the database for the orders and order items attached, with 
+    //     the given DTO and this orders, if success, is attached to the context and returned a confirmed notification.
+    //
+    //
+    // Parameters:
+    //   keyValues:
+    //     The object of order DTOs for the order to be added.
+    //
+    // Returns:
+    //     Confirmed notification.
+    //
+    // Remarks:
+    //     See Using CreateOrder for more information and examples.
     public async Task<String> CreateOrder(OrderRequestDTO ord)
     {
         try
         {
+            // Check valid request
+            if (ord == null)
+            {
+                return null;
+            }
+
             // Lấy userId
             int userId = ord.UserId;
+
+            // Check valid user
+            if (userId <= 0)
+            {
+                throw new InvalidIdException();
+            }
 
             // Lấy paymentId
             var payment = await _context.PaymentMethods.FirstOrDefaultAsync(pm => pm.Name.Equals(ord.MethodPay));
 
             int paymentId = payment.Id;
+
+            // Check valid payment id
+            if (paymentId <= 0)
+            {
+                throw new InvalidIdException();
+            }
 
             double totalPrice = 0;
 
@@ -36,6 +71,12 @@ public class OrderServiceImpl : AService<Order>, IOrderService
             int orderId = order.Id;
 
             List<OrderItemRequestDTO> list = ord.OrderItems;
+
+            // Check valid request
+            if (list is null || list.Count <= 0)
+            {
+                throw new InvalidRequest();
+            }
 
             foreach (var item in list)
             {
@@ -100,15 +141,35 @@ public class OrderServiceImpl : AService<Order>, IOrderService
             return "Order created successfully";
         }
         catch (Exception ex) {
-            return $"Failed to create order: {ex.Message}";
+            return $"Failed to create order: {ex.Message}." + ex.InnerException;
         }              
     }
 
+    // Summary:
+    //     Finds user's order. A query is made to the database for orders, if found, is
+    //     attached to the context and returned. If no order is found, then null is returned.
+    //
+    //
+    // Returns:
+    //     The order found, or null.
+    //
+    // Remarks:
+    //     See Using GetAllProduct and GetProductById for more information and examples.
     public async Task<OrderResponseDTO> GetOrder(int userId)
     {
+        if (userId <= 0)
+        {
+            throw new InvalidIdException();
+        }
+
         // Tìm kiếm order và user dựa trên userId
         var orders = await _context.Orders.FirstOrDefaultAsync(o => o.UserId == userId);
        
+        if (orders is null)
+        {
+            return null;
+        }
+
         var users = await _context.Users.FirstOrDefaultAsync(u => u.Id == orders.UserId);
 
         var paymentMethods = await _context.PaymentMethods.ToListAsync();

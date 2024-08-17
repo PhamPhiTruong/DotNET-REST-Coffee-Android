@@ -18,6 +18,7 @@ namespace REST_DotNET_Coffee_Android.Entities
         public string Password { get; set; } = String.Empty;
 
         [Required]
+        [EmailAddress]
         public string Email { get; set; } = String.Empty;
 
         [ForeignKey("UserInfo")]

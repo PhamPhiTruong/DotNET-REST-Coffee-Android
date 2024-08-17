@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using REST_DotNET_Coffee_Android.Entities;
 
+#nullable disable
+
 public class CartServiceImpl : AService<Cart>, ICartService
 {
     public CartServiceImpl(ApplicationDbContext context, ILogger<CartServiceImpl> logger) : base(context, logger)
@@ -12,6 +14,12 @@ public class CartServiceImpl : AService<Cart>, ICartService
         try
         {
             int userId = crd.UserId;
+
+            // Check valid user id
+            if (userId <= 0)
+            {
+                throw new InvalidIdException();
+            }
 
             var IngredientList = crd.IngredientList;
 

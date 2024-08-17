@@ -59,6 +59,8 @@ public class IngredientServiceImpl : AService<Ingredient>, IIngredientService
 
     private List<IngredientRespondeDTO> ToListDTO(List<Ingredient> ingredients)
     {
+        if (ingredients is null) throw new IngredientNullException();
+
         List<IngredientRespondeDTO> responde = new List<IngredientRespondeDTO>();
 
         ingredients.ForEach(i =>
@@ -71,6 +73,8 @@ public class IngredientServiceImpl : AService<Ingredient>, IIngredientService
 
     private IngredientRespondeDTO ToDTO(Ingredient ingredient)
     {
+        if (ingredient is null) throw new IngredientNullException();
+
         return new IngredientRespondeDTO
         {
             Name = ingredient.Name,
@@ -79,37 +83,92 @@ public class IngredientServiceImpl : AService<Ingredient>, IIngredientService
         };
     }
 
+    //
     // GET: return all ingredients
+    // Summary:
+    //     Finds all ingredients. A query is made to the database for ingredients, if found, is
+    //     attached to the context and returned. If no ingredient is found, then null is returned.
+    //
+    //
+    // Returns:
+    //     The ingredients found, or null.
+    //
+    // Remarks:
+    //     See Using GetIngredients for more information and examples.
     public async Task<ActionResult<List<IngredientRespondeDTO>>> GetIngredients()
     {
         var ingredients = await _context.Ingredients.ToListAsync<Ingredient>();
 
         if (ingredients is null || ingredients.Count <= 0)
         {
-            return new BadRequestResult();
+            return null;
         }
 
         return ToListDTO(ingredients);
     }
 
-    // GET: get product by Id
+    //
+    // Summary:
+    //     Finds an ingredient with the given primary key values. If an ingredient with the given
+    //     primary key values is being tracked by the context, then it is returned immediately
+    //     without making a request to the database. Otherwise, a query is made to the database
+    //     for an ingredient with the given primary key values and this ingredient, if found, is
+    //     attached to the context and returned. If no ingredient is found, then null is returned.
+    //
+    //
+    // Parameters:
+    //   keyValues:
+    //     The values of the primary key for the ingredient to be found.
+    //
+    // Returns:
+    //     The ingredient found, or null.
+    //
+    // Remarks:
+    //     See Using GetIngredients and GetIngredientById for more information and examples.
     public async Task<ActionResult<IngredientRespondeDTO>> GetIngredientById(int id)
     {
+        if (id <= 0) throw new InvalidIdException();
+
         var ingredient = await _context.Ingredients.FindAsync(id);
 
-        if (ingredient is null) { return new BadRequestResult(); }
+        if (ingredient is null) { return null; }
 
         return ToDTO(ingredient);
     }
 
-    // GET: get product by Type
+    //
+    // Summary:
+    //     Finds an ingredient with the given enum type. If an ingredient with the given
+    //     enum type is being tracked by the context, then it is returned immediately
+    //     without making a request to the database. Otherwise, a query is made to the database
+    //     for an ingredient with the given enum type and this ingredient, if found, is
+    //     attached to the context and returned. If no ingredient is found, then null is returned.
+    //
+    //
+    // Parameters:
+    //   keyValues:
+    //     The enums of type for the ingredient to be found.
+    //
+    // Returns:
+    //     The ingredient found, or null.
+    //
+    // Remarks:
+    //     See Using GetIngredients and GetIngredientById for more information and examples.
     public async Task<ActionResult<List<IngredientRespondeDTO>>> GetIngredientByType(EIngredientType type)
     {
+
+        if (type <= 0)
+        {
+            throw new IngredientException($"Invalid input enum type '{type}'. An type enum should not be smaller than 0.");
+        }
+
         string typeStr = IngredientTypeExtension.ToString(type);
 
         var ingredients = await _context.Ingredients
                             .Where<Ingredient>(i => i.Type == typeStr)
                             .ToListAsync();
+
+        if (ingredients is null || ingredients.Count <= 0) return null;
 
         return ToListDTO(ingredients);
     }

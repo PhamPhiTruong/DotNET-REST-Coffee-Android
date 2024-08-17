@@ -62,8 +62,14 @@ public class ProductServiceImpl : AService<Product>, IProductService
     }
         
     // From list of Product to list of DTO
-    private static List<ProductRespondeDTO> ToDTO(List<Product> products)
+    private static List<ProductRespondeDTO> ToListDTO(List<Product> products)
     {
+
+        if (products is null)
+        {
+            throw new ProductException("An product list should not be null here.");
+        }
+
         if (products == null || products.Count == 0) return null;
 
         List<ProductRespondeDTO> productJSONs = new List<ProductRespondeDTO>();
@@ -89,6 +95,12 @@ public class ProductServiceImpl : AService<Product>, IProductService
     // Update product
     private static Product Update(Product product, ProductRequestDTO request)
     {
+
+        if (request is null || product is null)
+        {
+            throw new ProductException("An product should not be null here.");
+        }
+
         product.Name = request.Name;
         product.AvatarUrl = request.AvatarUrl;
         product.BasePrice = request.BasePrice;
@@ -102,6 +114,11 @@ public class ProductServiceImpl : AService<Product>, IProductService
 
     private static Product NewProduct(ProductRequestDTO request)
     {
+        if (request is null)
+        {
+            throw new ProductException("An product should not be null here.");
+        }
+
         var product = new Product
         {
             Id = request.Id,
@@ -117,24 +134,34 @@ public class ProductServiceImpl : AService<Product>, IProductService
         return product;
     }
 
-    // Return all Products from database and turn them to DTO
+    // Summary:
+    //     Finds all products. A query is made to the database for products, if found, is
+    //     attached to the context and returned. If no product is found, then null is returned.
+    //
+    //
+    // Returns:
+    //     The product found, or null.
+    //
+    // Remarks:
+    //     See Using GetAllProduct and GetProductById for more information and examples.
     public async Task<ActionResult<List<ProductRespondeDTO>>> GetAllProduct()
     {
         var products = await _context.Products.ToListAsync<Product>();
 
         if (products is null || products.Count == 0)
         {
-            return new BadRequestResult();
+            return null;
         }
 
-        return ToDTO(products);
+        return ToListDTO(products);
     }
 
+    //
     // Summary:
     //     Finds an product with the given primary key values. If an product with the given
     //     primary key values is being tracked by the context, then it is returned immediately
     //     without making a request to the database. Otherwise, a query is made to the database
-    //     for an product with the given primary key values and this product, if found, is
+    //     for a product with the given primary key values and this product, if found, is
     //     attached to the context and returned. If no product is found, then null is returned.
     //
     //
@@ -158,7 +185,7 @@ public class ProductServiceImpl : AService<Product>, IProductService
 
         if (product is null)
         {
-            return new BadRequestResult();
+            return null;
         }
 
         return new ProductRespondeDTO
@@ -174,11 +201,31 @@ public class ProductServiceImpl : AService<Product>, IProductService
         };
     }
 
-    // Get product by type and turns it to DTO
-    // IF SUCCEED return full set of Products
-    // IF UNSUCCEED Return BadRequestResult
+    //
+    // Summary:
+    //     Finds an product with the given type. If an product with the given
+    //     type is being tracked by the context, then it is returned immediately
+    //     without making a request to the database. Otherwise, a query is made to the database
+    //     for an product with the given type and this product, if found, is
+    //     attached to the context and returned. If no product is found, then null is returned.
+    //
+    //
+    // Parameters:
+    //   keyValues:
+    //     The values of the enum type for the product to be found.
+    //
+    // Returns:
+    //     The product found, or null.
+    //
+    // Remarks:
+    //     See Using GetAllProduct and GetProductById for more information and examples.
     public async Task<ActionResult<List<ProductRespondeDTO>>> GetProductWithType(EProductType type)
     {
+
+        if (type <= 0)
+        {
+            throw new ProductException($"Invalid input enum type '{type}'. An type enum should not be smaller than 0.");
+        }
 
         string typeStr = ProductTypeExtension.ToString(type);
 
@@ -186,40 +233,72 @@ public class ProductServiceImpl : AService<Product>, IProductService
                                 .Where(p => p.Type == typeStr)
                                 .ToListAsync();
 
-        return ToDTO(products);
+        if (products is null || products.Count == 0)
+            return null;
+
+        return ToListDTO(products);
     }
 
-    // Get product by category and turns it to DTO
-    // IF SUCCEED return full set of Products
-    // IF UNSUCCEED Return BadRequestResult
+    //
+    // Summary:
+    //     Finds an product with the given type. If an product with the given
+    //     category is being tracked by the context, then it is returned immediately
+    //     without making a request to the database. Otherwise, a query is made to the database
+    //     for an product with the given category and this product, if found, is
+    //     attached to the context and returned. If no product is found, then null is returned.
+    //
+    //
+    // Parameters:
+    //   keyValues:
+    //     The values of the category for the product to be found.
+    //
+    // Returns:
+    //     The product found, or null.
+    //
+    // Remarks:
+    //     See Using GetAllProduct and GetProductById for more information and examples.
     public async Task<ActionResult<List<ProductRespondeDTO>>> GetProductByCategory(string category)
     {
-        if (string.IsNullOrEmpty(category)) return new BadRequestResult();
+        if (string.IsNullOrEmpty(category)) throw new CategoryException();
 
         var products = await _context.Products
                                 .Where(p => p.CategoryId == Convert.ToInt32(category))
                                 .ToListAsync();
 
-        return ToDTO(products);
+        if (products is null || products.Count == 0) return null;
+
+        return ToListDTO(products);
     }
 
-    // Turn a product DTO into a Product and add it to database, return full set of Products
-    // IF UNSUCCEED Return BadRequestResult
-    // IF product already exist, cancel request Return BadRequestResult
-    // IF SUCCEED return full set of Products
+    //
+    // Summary:
+    //     Add an product with the given product Data Transfer Oject (DTO). If an product with the given
+    //     DTO's primary key already existed in database, then it is returned an exception and cancel request immediately.
+    //     Otherwise, an insert command is made to the database for the product with the given DTO and this product,
+    //     if success, is attached to the context and returned a full list of products.
+    //
+    //
+    // Parameters:
+    //   keyValues:
+    //     The object of product's DTO for the product to be added.
+    //
+    // Returns:
+    //     Full list of products.
+    //
+    // Remarks:
+    //     See Using UpdateProduct for more information and examples.
     public async Task<ActionResult<List<ProductRespondeDTO>>> AddProduct(ProductRequestDTO request)
     {
+        // If given product is null
         if (request is null)
         {
-            Console.Error.WriteLine("Product is null!");
-            return new BadRequestResult();
+            throw new ProductNullException();
         }
 
-        // If product already exist, cancel request
+        // If given product already exist
         if (await _context.Products.FindAsync(request.Id) is not null)
         {
-            Console.Error.WriteLine("Product already exist!");
-            return new BadRequestResult();
+            throw new ProductAlreadyExistedException();
         }
 
         var product = NewProduct(request);
@@ -230,19 +309,33 @@ public class ProductServiceImpl : AService<Product>, IProductService
         return await GetAllProduct();
     }
 
-    // Turn a product DTO into a Product and update it to database
-    // IF SUCCEED return full set of Products
-    // IF UNSUCCEED Return BadRequestResult
+    //
+    // Summary:
+    //     Update an product with the given product Data Transfer Oject (DTO). If an product with the given
+    //     DTO's primary key is not already existed in database, then it is returned an exception and cancel 
+    //     request immediately. Otherwise, an update is made to the database for the product with the 
+    //     given DTO and this product, if success, returned a full list of products.
+    //
+    //
+    // Parameters:
+    //   keyValues:
+    //     The object of product's DTO for the product to be updated.
+    //
+    // Returns:
+    //     Full list of products.
+    //
+    // Remarks:
+    //     See Using AddProduct for more information and examples.
     public async Task<ActionResult<List<ProductRespondeDTO>>> UpdateProduct(ProductRequestDTO request)
     {
         if (request is null)
         {
-            return new BadRequestResult();
+            throw new ProductNullException();
         }
 
         var product = await _context.Products.FindAsync(request.Id);
 
-        // If product does not exist, add a new product
+        // If product existed or not existed
         if (product is not null)
         {
             // Product exist, update product
@@ -251,8 +344,8 @@ public class ProductServiceImpl : AService<Product>, IProductService
         }
         else
         {
-            // Product does not exist, add new product
-            await AddProduct(request);
+            // Product does not exist
+            throw new ProductException();
         }
 
         return await GetAllProduct();
@@ -261,18 +354,35 @@ public class ProductServiceImpl : AService<Product>, IProductService
     // Delete a product by Id
     // IF product not exist return BadRequestResult
     // IF product exist delete it.
+    //
+    // Summary:
+    //     Delete an product with the given primary key. If an product with the given
+    //     primary key is not already existed in database, then it is returned null.
+    //     Otherwise, an update is made to the database for the product with the 
+    //     given primary key and this product, if success, returned a full list of products.
+    //
+    //
+    // Parameters:
+    //   keyValues:
+    //     The values of primary key for the product to be deleted.
+    //
+    // Returns:
+    //     Full list of products, or null.
+    //
+    // Remarks:
+    //     See Using AddProduct for more information and examples.
     public async Task<ActionResult<List<ProductRespondeDTO>>> DeleteProduct(int id)
     {
         if (id < 0)
         {
-            return new BadRequestResult();
+            throw new InvalidIdException();
         }
 
         var product = await _context.Products.FindAsync(id);
 
         if (product is null)
         {
-            return new BadRequestResult();
+            return null;
         }
 
         _context.Remove(product);
