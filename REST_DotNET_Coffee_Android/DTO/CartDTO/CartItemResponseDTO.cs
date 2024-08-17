@@ -1,4 +1,7 @@
-﻿public class CartItemResponseDTO
+﻿#nullable disable
+#nullable disable
+
+public class CartItemResponseDTO
 {
     public int ItemId { get; set; }
     public int ProductId { get; set; }
