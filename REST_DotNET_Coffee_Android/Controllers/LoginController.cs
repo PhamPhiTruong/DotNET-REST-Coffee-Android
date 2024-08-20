@@ -22,9 +22,9 @@ namespace REST_DotNET_Coffee_Android.Controllers
 
         // POST: Register request
         [HttpPost("register/")]
-        public async Task<ActionResult<MessageRespondDTO>> Register([FromBody] RegisterRequestDTO regRequest)
+        public async Task<MessageRespondDTO> Register([FromBody] RegisterRequestDTO regRequest)
         {
-            return Ok(await _userService.Register(regRequest));
+            return await _userService.Register(regRequest);
         }
     }
 }

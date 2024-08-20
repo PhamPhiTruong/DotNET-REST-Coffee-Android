@@ -157,7 +157,8 @@ public class UserServiceImpl : AService<User>, IUserService
         return new TokenRespondeDTO
         {
             Message = "Login successfully.",
-            Token = "Feature on working, please come back later."
+            Token = "Feature on working, please come back later.",
+            Id = user.Id,
         };
     }
 
@@ -173,7 +174,7 @@ public class UserServiceImpl : AService<User>, IUserService
     /// <response code="400">If the request data is invalid.</response>
     /// <response code="409">If the username or email is already in use.</response>
     /// <response code="500">If an internal server error occurs.</response>
-    public async Task<ActionResult<MessageRespondDTO>> Register(RegisterRequestDTO request)
+    public async Task<MessageRespondDTO> Register(RegisterRequestDTO request)
     {
         if (request is null)
         {
@@ -197,16 +198,16 @@ public class UserServiceImpl : AService<User>, IUserService
         {
             return new MessageRespondDTO()
             {
-                Message = $"Error code: 400. Given email {Email} already in used."
+                Message = "Given email already in used."
             };
         }
 
         UserInfo userInfo = new UserInfo()
         {
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            Gender = request.Gender,
-            Phone = request.Phone
+            FirstName = "",
+            LastName = "",
+            Gender = "",
+            Phone = ""
         };
 
         UserDetail userDetail = new UserDetail()
@@ -229,7 +230,7 @@ public class UserServiceImpl : AService<User>, IUserService
 
         return new MessageRespondDTO()
         {
-            Message = "Register successfully, please login."
+            Message = "201"
         };
     }
 

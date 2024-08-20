@@ -16,9 +16,11 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import com.nlu.packages.MainActivity;
 import com.nlu.packages.R;
-import com.nlu.packages.request_dto.LoginRequestDTO;
-import com.nlu.packages.response_dto.TokenResponseDTO;
-import com.nlu.packages.service.CoffeeService;
+import com.nlu.packages.dotnet_callapi.responsedto.TokenRespondeDTO;
+import com.nlu.packages.dotnet_callapi.requestdto.LoginRequestDTO;
+//import com.nlu.packages.request_dto.LoginRequestDTO;
+//import com.nlu.packages.response_dto.TokenResponseDTO;
+import com.nlu.packages.dotnet_callapi.service.CoffeeService;
 import com.nlu.packages.utils.MyUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -67,9 +69,9 @@ public class LoginActivity extends AppCompatActivity {
                 CoffeeService.getClient().login(LoginRequestDTO.builder()
                                 .email(email)
                                 .password(password).build())
-                        .enqueue(new Callback<TokenResponseDTO>() {
+                        .enqueue(new Callback<TokenRespondeDTO>() {
                             @Override
-                            public void onResponse(Call<TokenResponseDTO> call, Response<TokenResponseDTO> response) {
+                            public void onResponse(Call<TokenRespondeDTO> call, Response<TokenRespondeDTO> response) {
                                 if (response.isSuccessful() && response.body().getToken() != null) {
                                     String token = response.body().getToken();
                                     MyUtils.save(LoginActivity.this, "token", token);
@@ -83,7 +85,7 @@ public class LoginActivity extends AppCompatActivity {
                             }
 
                             @Override
-                            public void onFailure(Call<TokenResponseDTO> call, Throwable throwable) {
+                            public void onFailure(Call<TokenRespondeDTO> call, Throwable throwable) {
                                 throw new RuntimeException(throwable);
                             }
                         });

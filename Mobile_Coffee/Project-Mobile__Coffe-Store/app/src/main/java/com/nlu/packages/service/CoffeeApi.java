@@ -19,17 +19,17 @@ import java.util.List;
 import java.util.Map;
 
 public interface CoffeeApi {
-    // Link API:localhost:8888/api
-    @POST("api/v1/dang-nhap")
+    // Link API:localhost:5261/api
+    @POST("v1/login")
     Call<TokenResponseDTO> login(@Body LoginRequestDTO loginRequestDTO);
 
-    @GET("api/v1/san-pham")
+    @GET("v1/product")
     Call<List<ProductResponseDTO>> getAllProduct();
 
-    @GET("api/v1/san-pham/nuoc-uong")
+    @GET("v1/product/type")
     Call<List<ProductResponseDTO>> getProductWithType(String typePathName, String name, Long id);
 
-    @GET("api/v1/san-pham/nuoc-uong/{categoryPathName}")
+    @GET("v1/product/category/{categoryPathName}")
     Call<List<ProductResponseDTO>> getProductWithCate (String typePathName,
                                                        @Path("categoryPathName") String categoryPathName,
                                                        String name, Long id);
