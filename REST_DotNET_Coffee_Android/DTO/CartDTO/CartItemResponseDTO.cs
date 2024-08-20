@@ -1,6 +1,4 @@
 ﻿#nullable disable
-#nullable disable
-
 public class CartItemResponseDTO
 {
     public int ItemId { get; set; }
