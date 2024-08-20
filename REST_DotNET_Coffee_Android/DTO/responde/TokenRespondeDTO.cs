@@ -1,4 +1,5 @@
-﻿public class TokenRespondeDTO
+﻿#nullable disable
+public class TokenRespondeDTO
 {
 
     public string Token { get; set; } 
