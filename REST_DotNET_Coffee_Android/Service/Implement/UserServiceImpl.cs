@@ -25,6 +25,7 @@ public class UserServiceImpl : AService<User>, IUserService
             }
         }
     }
+
     private List<User> LoadUsersFromFile()
     {
         try
@@ -97,15 +98,24 @@ public class UserServiceImpl : AService<User>, IUserService
         }
     }
 
-    // Login
-    // Return message login failure if login unsuccessful.
-    // Return token with message if login successful.
-    public async Task<ActionResult<TokenRespondeDTO>> Login(LoginRequestDTO request)
+    /// <summary>
+    /// Authenticates the user and generates a JWT token.
+    /// </summary>
+    /// <param name="request">The login request containing username and password.</param>
+    /// <returns>
+    /// Returns a JWT token if authentication is successful.
+    /// If the authentication fails, returns a 401 Unauthorized status.
+    /// </returns>
+    /// <response code="200">Returns the JWT token and user details.</response>
+    /// <response code="400">If the request data is invalid.</response>
+    /// <response code="401">If the username or password is incorrect.</response>
+    /// <response code="500">If an internal server error occurs.</response>
+    public async Task<TokenRespondeDTO> Login(LoginRequestDTO request)
     {
 
         if (request is null)
         {
-            return new BadRequestResult();
+            throw new InvalidRequest();
         }
 
         string Email = request.Email;
@@ -114,13 +124,33 @@ public class UserServiceImpl : AService<User>, IUserService
 
         var user = await _context.Users
                             .Where(u => u.Email == Email && u.Password == Password)
-                            .ToListAsync();
+                            .FirstOrDefaultAsync<User>();
 
-        if (user is null || user.Count == 0)
+        if (user is null)
         {
             return new TokenRespondeDTO()
             {
                 Message = "Email and password are not correct or not already register. Please check again."
+            };
+        }
+
+        var userDetail = await _context.UserDetails
+                                    .Where(u => u.Id == user.DetailId)
+                                    .FirstOrDefaultAsync<UserDetail>();
+
+        if (userDetail is null)
+        {
+            return new TokenRespondeDTO()
+            {
+                Message = "User suspended."
+            };
+        }
+
+        if (userDetail.Enable == 0 || userDetail.Expired == 1)
+        {
+            return new TokenRespondeDTO()
+            {
+                Message = $"User {user.UserName} with email {user.Email} has been disabled or expired."
             };
         }
 
@@ -131,24 +161,32 @@ public class UserServiceImpl : AService<User>, IUserService
         };
     }
 
-    // Register
-    // Typically add new user to users table
-    // IF user ALREADY registered, return message $"User with email {Email} already registered."
-    // IF user NOT ALREADY registered, add new user to users table, return message "Register successfully."
+    /// <summary>
+    /// Registers a new user with the provided details.
+    /// </summary>
+    /// <param name="request">The registration request containing user details like username, password, and email.</param>
+    /// <returns>
+    /// Returns a 201 Created status if the registration is successful.
+    /// If the registration fails due to a conflict (e.g., username already exists), returns a 409 Conflict status.
+    /// </returns>
+    /// <response code="201">Returns if the user is successfully registered.</response>
+    /// <response code="400">If the request data is invalid.</response>
+    /// <response code="409">If the username or email is already in use.</response>
+    /// <response code="500">If an internal server error occurs.</response>
     public async Task<ActionResult<MessageRespondDTO>> Register(RegisterRequestDTO request)
     {
         if (request is null)
         {
-            return new BadRequestResult();
+            throw new InvalidRequest();
         }
 
         string Email = request.Email;
 
         string Password = request.Password;
 
-        if (string.IsNullOrEmpty(Email))
+        if (string.IsNullOrEmpty(Email) || string.IsNullOrEmpty(Password))
         {
-            return new BadRequestResult();
+            throw new InvalidRequest();
         }
 
         var existed = await _context.Users
@@ -159,7 +197,7 @@ public class UserServiceImpl : AService<User>, IUserService
         {
             return new MessageRespondDTO()
             {
-                Message = $"User with email {Email} already registered."
+                Message = $"Error code: 400. Given email {Email} already in used."
             };
         }
 

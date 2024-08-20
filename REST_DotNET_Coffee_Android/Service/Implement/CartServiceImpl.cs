@@ -14,6 +14,12 @@ public class CartServiceImpl : AService<Cart>, ICartService
         {
             int userId = crd.UserId;
 
+            // Check valid user id
+            if (userId <= 0)
+            {
+                throw new InvalidIdException();
+            }
+
             var IngredientList = crd.IngredientList;
 
             var Cart = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == userId);
