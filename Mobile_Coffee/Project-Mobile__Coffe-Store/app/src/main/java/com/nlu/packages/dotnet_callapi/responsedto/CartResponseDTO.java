@@ -13,4 +13,11 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CartResponseDTO {
     private List<CartItemResponseDTO> listItem;
+    public double getTotal() {
+        double result = 0;
+        for(CartItemResponseDTO cir : listItem){
+            result+= cir.getPreTotal();
+        }
+        return result;
+    }
 }

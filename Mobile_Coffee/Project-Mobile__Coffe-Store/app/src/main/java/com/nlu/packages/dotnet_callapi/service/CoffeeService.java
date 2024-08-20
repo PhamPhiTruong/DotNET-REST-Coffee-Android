@@ -28,21 +28,4 @@ public class CoffeeService {
     public static CoffeeApi getClient() {
         return getRetrofitInstance().create(CoffeeApi.class);
     }
-
-//    public static void main(String[] args) {
-//        LoginRequestDTO lrd = new LoginRequestDTO("nqat0919@gmail.com","0919");
-//        CoffeeService.getClient().login(lrd).enqueue(new Callback<TokenRespondeDTO>() {
-//            @Override
-//            public void onResponse(Call<TokenRespondeDTO> call, Response<TokenRespondeDTO> response) {
-//                if (response.isSuccessful()) {
-//                    System.out.println(response.body().getMessage());
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<TokenRespondeDTO> call, Throwable throwable) {
-//                throw new RuntimeException(throwable);
-//            }
-//        });
-//    }
 }

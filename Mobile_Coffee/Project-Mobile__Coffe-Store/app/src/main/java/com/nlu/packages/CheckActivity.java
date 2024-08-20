@@ -34,12 +34,7 @@ public class CheckActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        // recycleOrderSummary
-//        Đoạn code này nhận list từ Activity Cart
-//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-//            List<CartResponseDTO.CartItemDTO> list = getIntent().getParcelableArrayListExtra("chooseList", CartResponseDTO.CartItemDTO.class);
-//        }
-//        Hoặc đoạn này nhưng CartResponseDTO.CartItemDTO implements Serializable
+
         List<CartResponseDTO.CartItemDTO> list =  (List<CartResponseDTO.CartItemDTO>) getIntent().getSerializableExtra("chooseList");
         RecyclerView recyclerView = findViewById(R.id.recycleOrderSummary);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
