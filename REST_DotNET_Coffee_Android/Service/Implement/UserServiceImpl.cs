@@ -135,8 +135,8 @@ public class UserServiceImpl : AService<User>, IUserService
         }
 
         var userDetail = await _context.UserDetails
-                            .Where(u => u.Id == user.DetailId)
-                            .FirstOrDefaultAsync<UserDetail>();
+                                    .Where(u => u.Id == user.DetailId)
+                                    .FirstOrDefaultAsync<UserDetail>();
 
         if (userDetail is null)
         {
@@ -146,7 +146,7 @@ public class UserServiceImpl : AService<User>, IUserService
             };
         }
 
-        if (user.UserDetail.Enable == 0 || user.UserDetail.Expired == 1)
+        if (userDetail.Enable == 0 || userDetail.Expired == 1)
         {
             return new TokenRespondeDTO()
             {
