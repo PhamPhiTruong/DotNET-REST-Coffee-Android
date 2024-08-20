@@ -110,7 +110,7 @@ public class UserServiceImpl : AService<User>, IUserService
     /// <response code="400">If the request data is invalid.</response>
     /// <response code="401">If the username or password is incorrect.</response>
     /// <response code="500">If an internal server error occurs.</response>
-    public async Task<ActionResult<TokenRespondeDTO>> Login(LoginRequestDTO request)
+    public async Task<TokenRespondeDTO> Login(LoginRequestDTO request)
     {
 
         if (request is null)
@@ -124,21 +124,33 @@ public class UserServiceImpl : AService<User>, IUserService
 
         var user = await _context.Users
                             .Where(u => u.Email == Email && u.Password == Password)
-                            .ToListAsync();
+                            .FirstOrDefaultAsync<User>();
 
-        if (user[0].UserDetail.Enable == 0 || user[0].UserDetail.Expired == 1)
-        {
-            return new TokenRespondeDTO()
-            {
-                Message = $"User {user[0].UserName} with email {user[0].Email} has been disabled or expired."
-            };
-        }
-
-        if (user is null || user.Count == 0)
+        if (user is null)
         {
             return new TokenRespondeDTO()
             {
                 Message = "Email and password are not correct or not already register. Please check again."
+            };
+        }
+
+        var userDetail = await _context.UserDetails
+                            .Where(u => u.Id == user.DetailId)
+                            .FirstOrDefaultAsync<UserDetail>();
+
+        if (userDetail is null)
+        {
+            return new TokenRespondeDTO()
+            {
+                Message = "User suspended."
+            };
+        }
+
+        if (user.UserDetail.Enable == 0 || user.UserDetail.Expired == 1)
+        {
+            return new TokenRespondeDTO()
+            {
+                Message = $"User {user.UserName} with email {user.Email} has been disabled or expired."
             };
         }
 

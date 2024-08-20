@@ -15,9 +15,9 @@ namespace REST_DotNET_Coffee_Android.Controllers
 
         // POST: Login request
         [HttpPost("login/")]
-        public async Task<ActionResult<TokenRespondeDTO>> Login([FromBody] LoginRequestDTO request)
+        public async Task<TokenRespondeDTO> Login([FromBody] LoginRequestDTO request)
         {
-            return Ok(await _userService.Login(request));
+            return await _userService.Login(request);
         }
 
         // POST: Register request
