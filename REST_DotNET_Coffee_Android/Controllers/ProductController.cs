@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace REST_DotNET_Coffee_Android.Controllers
 {
     [ApiController]
-    [Route("v1/[controller]")]
+    [Route("product/")]
     public class ProductController : ControllerBase
     {
 
@@ -17,53 +17,53 @@ namespace REST_DotNET_Coffee_Android.Controllers
         }
 
         //// GET: all products
-        [HttpGet]
-        public async Task<ActionResult<List<ProductRespondeDTO>>> GetProduct()
+        [HttpGet("getAllProduct/")]
+        public async Task<List<ProductRespondeDTO>> GetProduct()
         {
-            return Ok(await _productService.GetAllProduct());
+            return await _productService.GetAllProduct();
         }
 
         // GET: a single product
-        [HttpGet("id/{id}")]
-        public async Task<ActionResult<ProductRespondeDTO>> GetProduct(int id)
+        [HttpGet("getProductById/")]
+        public async Task<ProductRespondeDTO> GetProduct( int id)
         {
-            return Ok(await _productService.GetProductById(id));
+            return await _productService.GetProductById(id);
         }
 
         // GET: product with type
-        [HttpGet("type/")]
-        public async Task<ActionResult<List<ProductRespondeDTO>>> GetProduct(EProductType type)
+        [HttpGet("getProductByType/")]
+        public async Task<List<ProductRespondeDTO>> GetProduct(EProductType type)
         {
-            return Ok(await _productService.GetProductWithType(type));
+            return await _productService.GetProductWithType(type);
         }
 
         // GET: product with category
-        [HttpGet("category/{category}")]
-        public async Task<ActionResult<ProductRespondeDTO>> GetProduct(string category)
+        [HttpGet("getProductByCategory/")]
+        public async Task<List<ProductRespondeDTO>> GetProduct(string category)
         {
-            return Ok(await _productService.GetProductByCategory(category));
+            return await _productService.GetProductByCategory(category);
         }
 
         // POST: add a product
-        [HttpPost]
-        public async Task<ActionResult<List<ProductRespondeDTO>>> AddProduct([FromBody] ProductRequestDTO request)
+        [HttpPost("addProduct/")]
+        public async Task<List<ProductRespondeDTO>> AddProduct([FromBody] ProductRequestDTO request)
         {
-            return Ok(await _productService.AddProduct(request));
+            return await _productService.AddProduct(request);
         }
 
         // PUT: modify a product
-        [HttpPut]
-        public async Task<ActionResult<List<ProductRespondeDTO>>> UpdateProduct(ProductRequestDTO request)
+        [HttpPut("updateProduct/")]
+        public async Task<List<ProductRespondeDTO>> UpdateProduct(ProductRequestDTO request)
         {
-            return Ok(await _productService.UpdateProduct(request));
+            return await _productService.UpdateProduct(request);
 
         }
 
         // DELETE: a product
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<List<ProductRespondeDTO>>> DeleteProduct(int id)
+        [HttpDelete("deleteProduct/")]
+        public async Task<List<ProductRespondeDTO>> DeleteProduct(int id)
         {
-            return Ok(await _productService.DeleteProduct(id));
+            return await _productService.DeleteProduct(id);
         }
     }
 }

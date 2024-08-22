@@ -8,7 +8,7 @@ public class CartServiceImpl : AService<Cart>, ICartService
     {
     }
 
-    public async Task<string> AddCart(CartRequestDTO crd)
+    public async Task<MessageRespondDTO> AddCart(CartRequestDTO crd)
     {
         try
         {
@@ -60,7 +60,10 @@ public class CartServiceImpl : AService<Cart>, ICartService
                     _context.CartAddIngredients.Add(CartAddIngre);
                 }
                 await _context.SaveChangesAsync();
-                return "Cart add successfully";
+                return new MessageRespondDTO
+                {
+                    Message = "Cart Add Success"
+                };
             }
             else
             {
@@ -89,16 +92,23 @@ public class CartServiceImpl : AService<Cart>, ICartService
                     _context.CartAddIngredients.Add(CartAddIngre);
                 }
                 await _context.SaveChangesAsync();
-                return "Cart add successfully";
+                return new MessageRespondDTO
+                {
+                    Message = "Cart Add Success"
+                };
             }
         }
         catch (Exception ex)
         {
-            return $"Failed to add cart: {ex.Message}";
+            
+            return new MessageRespondDTO
+            {
+                Message = $"Failed to add cart: {ex.Message}"
+            };
         }   
     }
 
-    public async Task<string> DeleteItemCart(int ItemCartId)
+    public async Task<MessageRespondDTO> DeleteItemCart(int ItemCartId)
     {
         try
         {
@@ -114,10 +124,17 @@ public class CartServiceImpl : AService<Cart>, ICartService
             _context.CartItems.Remove(CartItem);
             // Xóa cart item
             await _context.SaveChangesAsync();
-            return "Delete cart item successfully";
+            return new MessageRespondDTO
+            {
+                Message = "Success Delete Item"
+            };
         }
-        catch (Exception ex) {
-            return $"Failed to delete item cart: {ex.Message}";
+        catch (Exception ex)
+        {
+            return new MessageRespondDTO
+            {
+                Message = $"Failed to delete item cart: {ex.Message}"
+            };
         }
     }
 
@@ -162,5 +179,36 @@ public class CartServiceImpl : AService<Cart>, ICartService
         return result;
     }
 
-
+    public async Task<MessageRespondDTO> UpdateItem(CartItemRequestDTO cird)
+    {
+        try
+        {
+            CartItem item = await _context.CartItems.FirstOrDefaultAsync(ci => ci.Id == cird.ItemId);
+            if (item == null)
+            {
+                return new MessageRespondDTO
+                {
+                    Message = "Item Not Exist"
+                };
+            }
+            else
+            {
+                item.Quantity = cird.Quantity;
+                _context.CartItems.Update(item);
+                await _context.SaveChangesAsync();
+                return new MessageRespondDTO
+                {
+                    Message = "Yes"
+                };
+            }
+        }
+        catch (Exception ex)
+        {
+             
+            return new MessageRespondDTO
+            {
+                Message = $"Failed to delete item cart: {ex.Message}"
+            };
+        }
+    }
 }

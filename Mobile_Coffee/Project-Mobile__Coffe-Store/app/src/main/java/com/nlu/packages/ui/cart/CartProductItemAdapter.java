@@ -43,10 +43,12 @@ public class CartProductItemAdapter extends RecyclerView.Adapter<CartProductItem
                                   BiConsumer<View, CartItemResponseDTO> onChangeQuantityHandler,
                                   BiConsumer<Integer, Boolean> onChooseItemHandler){
         this.context = context;
+        this.dataStore = DataStore.getInstance();
         this.dataStore.setCart(cartResponseDTO);
         this.onDeleteHandler = onDeleteHandler;
         this.onChangeQuantityHandler = onChangeQuantityHandler;
         this.onChooseItemHandler = onChooseItemHandler;
+        this.checkBoxStates = new SparseBooleanArray();
     }
 
     @NonNull

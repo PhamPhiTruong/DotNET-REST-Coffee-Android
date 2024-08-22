@@ -3,13 +3,14 @@ package com.nlu.packages.ui.home;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
-import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -19,41 +20,38 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.nlu.packages.R;
-import com.nlu.packages.response_dto.product.ProductResponseDTO;
-import com.nlu.packages.response_dto.wishlist.WishlistRequestDTO;
-import com.nlu.packages.service.CoffeeApi;
-import com.nlu.packages.service.CoffeeService;
+import com.nlu.packages.dotnet_callapi.dataStore.DataStore;
+import com.nlu.packages.dotnet_callapi.responsedto.ProductRespondeDTO;
+import com.nlu.packages.dotnet_callapi.service.CoffeeService;
+import com.nlu.packages.dotnet_callapi.service.CoffeeApi;
 import com.nlu.packages.ui.cart.CartActivity;
 import com.nlu.packages.ui.fragment.DetailProductOrderActivity;
 import com.nlu.packages.ui.order.OrderFragment;
-import com.nlu.packages.ui.order.OrderProduct.ProductSearch;
-import com.nlu.packages.ui.user.ProfileActivity;
 import lombok.var;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 public class HomeFragment extends Fragment implements CoffeeForYouRvInterface, TopCoffeeRvInterface {
+    private DataStore dataStore;
     private ConstraintLayout constraintLayoutHome;
     private SearchView searchView;
     private androidx.appcompat.widget.AppCompatButton button;
     private ImageButton avatarButton;
     private RecyclerView coffeeForYouRv, topPickRv;
-    private ArrayList<ProductResponseDTO> coffeeForYouDataSource, topPickDataSource = new ArrayList<>();
+    private ArrayList<ProductRespondeDTO> coffeeForYouDataSource, topPickDataSource = new ArrayList<>();
     private LinearLayoutManager linearLayoutManager;
     CoffeForYouRvAdapter coffeForYouRvAdapter;
     TopPickRvAdapter topPickRvAdapter;
     private CoffeeApi coffeeApi;
-    private Consumer<ProductResponseDTO> onClickHandler;
+    private Consumer<ProductRespondeDTO> onClickHandler;
     private OrderFragment orderFragment = new OrderFragment();
-    private WishlistRequestDTO wishlistRequestDTO = new WishlistRequestDTO();
-    private List<Long> productIds;
 
     public HomeFragment() {
     }
@@ -62,23 +60,33 @@ public class HomeFragment extends Fragment implements CoffeeForYouRvInterface, T
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-
+        dataStore = DataStore.getInstance();
         // Event Listener
         onClickHandler = (productDTO) -> {
+            System.out.println(productDTO.getId());
             CoffeeService.getClient()
-                    .getProduct("nuoc-uong", "",
-                            Map.of("id", productDTO.getProductId()+""))
-                    .enqueue(new Callback<List<ProductResponseDTO>>() {
+                    .getProduct(productDTO.getId())
+                    .enqueue(new Callback<ProductRespondeDTO>() {
                         @Override
-                        public void onResponse(Call<List<ProductResponseDTO>> call, Response<List<ProductResponseDTO>> response) {
-                            var intent = new Intent(getContext(), DetailProductOrderActivity.class);
-                            intent.putExtra("productOrder", (ArrayList<ProductResponseDTO>) response.body());
-                            startActivity(intent);
+                        public void onResponse(Call<ProductRespondeDTO> call, Response<ProductRespondeDTO> response) {
+                            if (response.isSuccessful() && response.body() != null) {
+                                ProductRespondeDTO product = response.body();
+                                var intent = new Intent(getContext(), DetailProductOrderActivity.class);
+                                intent.putExtra("productOrder", product);
+                                startActivity(intent);
+                            } else {
+                                try {
+                                    String errorBody = response.errorBody().string();
+                                    Log.e("API_ERROR", "Error code: " + response.code() + ", headers: " + response.headers());
+                                } catch (IOException e) {
+                                    Log.e("API_ERROR", "Error reading error body", e);
+                                }
+                            }
                         }
 
                         @Override
-                        public void onFailure(Call<List<ProductResponseDTO>> call, Throwable throwable) {
-
+                        public void onFailure(Call<ProductRespondeDTO> call, Throwable throwable) {
+                            throw new RuntimeException(throwable);
                         }
                     });
         };
@@ -100,43 +108,7 @@ public class HomeFragment extends Fragment implements CoffeeForYouRvInterface, T
             }
         });
 
-        //xử lý sự kiện tìm kiếm, tra cứu thông tin
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                Call<List<ProductResponseDTO>> call = coffeeApi.searchProduct(query);
-                call.enqueue(new Callback<List<ProductResponseDTO>>() {
-                    @Override
-                    public void onResponse(Call<List<ProductResponseDTO>> call, Response<List<ProductResponseDTO>> response) {
-                        List<ProductResponseDTO> responseDTOS = response.body();
-                        if (responseDTOS.isEmpty()) {
-                            Toast.makeText(getContext(), "Không tìm thấy", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Intent intent = new Intent(HomeFragment.this.getContext(), ProductSearch.class);
-                            intent.putExtra("ProductOrder", (ArrayList<ProductResponseDTO>) responseDTOS);
-                            startActivity(intent);
-                        }
-                    }
 
-                    @Override
-                    public void onFailure(Call<List<ProductResponseDTO>> call, Throwable throwable) {
-                        System.out.println(throwable);
-                    }
-                });
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
-
-        avatarButton = view.findViewById(R.id.btn_avatar);
-        avatarButton.setOnClickListener((v) -> {
-            Intent intent = new Intent(getContext(), ProfileActivity.class);
-            startActivity(intent);
-        });
 
         //setting for `coffee for you` and `top pick` data source
         getListCoffee();
@@ -226,17 +198,19 @@ public class HomeFragment extends Fragment implements CoffeeForYouRvInterface, T
     //get data from api
     public void getListCoffee() {
         coffeeApi = CoffeeService.getClient();
-        Call<List<ProductResponseDTO>> call = coffeeApi.getAllProduct();
-        call.enqueue(new Callback<List<ProductResponseDTO>>() {
+        Call<List<ProductRespondeDTO>> call = coffeeApi.getAllProduct();
+        call.enqueue(new Callback<List<ProductRespondeDTO>>() {
             @Override
-            public void onResponse(Call<List<ProductResponseDTO>> call, Response<List<ProductResponseDTO>> response) {
+            public void onResponse(Call<List<ProductRespondeDTO>> call, Response<List<ProductRespondeDTO>> response) {
                 if (response.isSuccessful()) {
                     //get response data for `coffee for you`
-                    List<ProductResponseDTO> responseDTOS = response.body();
-                    coffeeForYouDataSource = (ArrayList<ProductResponseDTO>) responseDTOS;
+                    List<ProductRespondeDTO> responseDTOS = response.body();
+                    dataStore.setList(responseDTOS);
+
+                    coffeeForYouDataSource = (ArrayList<ProductRespondeDTO>) responseDTOS;
 
                     //get response data for `top pick`
-                    topPickDataSource = (ArrayList<ProductResponseDTO>) response.body();
+                    topPickDataSource = (ArrayList<ProductRespondeDTO>) response.body();
 
                     //update data to adapter
                     coffeForYouRvAdapter.updateData(responseDTOS);
@@ -252,7 +226,7 @@ public class HomeFragment extends Fragment implements CoffeeForYouRvInterface, T
             }
 
             @Override
-            public void onFailure(Call<List<ProductResponseDTO>> call, Throwable throwable) {
+            public void onFailure(Call<List<ProductRespondeDTO>> call, Throwable throwable) {
                 System.out.println(throwable.getMessage());
             }
         });

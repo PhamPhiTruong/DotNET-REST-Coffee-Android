@@ -17,9 +17,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.nlu.packages.CheckActivity;
 import com.nlu.packages.R;
 
+import com.nlu.packages.dotnet_callapi.dataStore.DataStore;
+import com.nlu.packages.dotnet_callapi.requestdto.CartItemRequestDTO;
 import com.nlu.packages.dotnet_callapi.requestdto.CartRequestDTO;
+import com.nlu.packages.dotnet_callapi.requestdto.OrderItemRequestDTO;
 import com.nlu.packages.dotnet_callapi.responsedto.CartItemResponseDTO;
 import com.nlu.packages.dotnet_callapi.responsedto.CartResponseDTO;
+import com.nlu.packages.dotnet_callapi.responsedto.MessageRespondDTO;
 import com.nlu.packages.dotnet_callapi.service.CoffeeService;
 import com.nlu.packages.utils.MyUtils;
 import lombok.var;
@@ -49,29 +53,20 @@ public class CartActivity extends AppCompatActivity {
     private BiConsumer<Integer, Boolean> onChooseItemHandler;
     private Runnable onCheckoutClickHandler;
     private Button btnCheckout;
-    private String token;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        DataStore dataStore = DataStore.getInstance();
         EdgeToEdge.enable(this);
-        token = MyUtils.get(this,  "token");
-
         //Định nghĩa các hàm EventHandler
         onDeleteHandler = (item, pos) -> {
-            CartRequestDTO requestDTO = CartRequestDTO.builder()
-                    .quantity(0)
-                    .productId(item.getProductId())
-                    .ingredientList(item.getIngredientList())
-                    .build();
-
-
-
-
+            CartResponseDTO cart = dataStore.getCart();
+            int cartItemId = cart.getListItem().get(pos).getItemId();
             CoffeeService.getClient()
-                    .addCart(requestDTO)
-                    .enqueue(new Callback<String>() {
+                    .deleteCart(cartItemId)
+                    .enqueue(new Callback<MessageRespondDTO>() {
                         @Override
-                        public void onResponse(Call<String> call, Response<String> response) {
+                        public void onResponse(Call<MessageRespondDTO> call, Response<MessageRespondDTO> response) {
                             Executor executor = Executors.newSingleThreadExecutor();
                             executor.execute(() -> onLoadHandler.run());
                             runOnUiThread(() -> {
@@ -81,7 +76,7 @@ public class CartActivity extends AppCompatActivity {
                         }
 
                         @Override
-                        public void onFailure(Call<String> call, Throwable throwable) {
+                        public void onFailure(Call<MessageRespondDTO> call, Throwable throwable) {
                             throw new RuntimeException(throwable);
                         }
                     });
@@ -94,6 +89,7 @@ public class CartActivity extends AppCompatActivity {
                         public void onResponse(Call<CartResponseDTO> call, Response<CartResponseDTO> response) {
                             if(response.isSuccessful()) {
                                 cartResponseDTO = response.body();
+                                dataStore.setCart(cartResponseDTO);
                                 if (cartResponseDTO.getListItem().size() == 0) {
                                     // draw Empty
                                     findViewById(R.id.listViewProductsInCart_EmptyState)
@@ -131,23 +127,21 @@ public class CartActivity extends AppCompatActivity {
                 case "btn_plus": quantity++;
                     break;
             }
-            CartRequestDTO requestDTO = CartRequestDTO
-                    .builder()
-                    .quantity(quantity)
-                    .ingredientList(itemDTO.getIngredientList())
-                    .productId(itemDTO.getProductId())
-                    .build();
+            CartItemRequestDTO requestDTO = CartItemRequestDTO.builder()
+                                            .itemId(itemDTO.getItemId())
+                                            .quantity(quantity)
+                                            .build();
             CoffeeService.getClient()
-                    .addCart(requestDTO).enqueue(new Callback<String>() {
+                    .updateCart(requestDTO).enqueue(new Callback<MessageRespondDTO>() {
                         @Override
-                        public void onResponse(Call<String> call, Response<String> response) {
+                        public void onResponse(Call<MessageRespondDTO> call, Response<MessageRespondDTO> response) {
                             Executor executor = Executors.newSingleThreadExecutor();
                             executor.execute(() -> onLoadHandler.run());
                             runOnUiThread(() -> cartProductItemAdapter.redraw(cartResponseDTO));
                         }
 
                         @Override
-                        public void onFailure(Call<String> call, Throwable throwable) {
+                        public void onFailure(Call<MessageRespondDTO> call, Throwable throwable) {
                             throw new RuntimeException(throwable);
                         }
                     });
@@ -161,7 +155,7 @@ public class CartActivity extends AppCompatActivity {
         onCheckoutClickHandler = () -> {
             Intent intent = new Intent(CartActivity.this, CheckActivity.class);
             var list = getChooseList();
-            intent.putExtra("chooseList", (ArrayList<CartItemResponseDTO>) list);
+            intent.putExtra("chooseList", (ArrayList<OrderItemRequestDTO>) list);
             startActivity(intent);
         };
 
@@ -171,7 +165,7 @@ public class CartActivity extends AppCompatActivity {
         btnBack.setOnClickListener((e) -> finish());
         btnCheckout = findViewById(R.id.cart_items_checkout);
         cartProductItemAdapter = new CartProductItemAdapter(this,
-                cartResponseDTO,
+                dataStore.getCart(),
                 onDeleteHandler,
                 onChangeQuantityHandler,
                 onChooseItemHandler);
@@ -197,11 +191,16 @@ public class CartActivity extends AppCompatActivity {
         });
     }
 
-    List<CartItemResponseDTO> getChooseList() {
-        List<CartItemResponseDTO> list = new ArrayList<>();
+    List<OrderItemRequestDTO> getChooseList() {
+        List<OrderItemRequestDTO> list = new ArrayList<>();
         var arr = chooseSet.stream().collect(Collectors.toList());
         for (int i = 0; i < chooseSet.size(); i++) {
-            list.add(cartResponseDTO.getListItem().get(arr.get(i)));
+            CartItemResponseDTO item = cartResponseDTO.getListItem().get(arr.get(i));
+            OrderItemRequestDTO target = OrderItemRequestDTO.builder()
+                                         .poductId(item.getProductId())
+                                         .quantity(item.getQuantity())
+                                         .addIngredients(item.getIngredientList()).build();
+            list.add(target);
         }
         return list;
     }

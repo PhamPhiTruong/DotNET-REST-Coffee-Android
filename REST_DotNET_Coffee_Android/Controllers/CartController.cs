@@ -21,7 +21,7 @@ public class CartController : ControllerBase
     }
 
     [HttpPost("addCart/")]
-    public async Task<String> AddCart([FromBody] CartRequestDTO cartRequestDTO) {
+    public async Task<MessageRespondDTO> AddCart([FromBody] CartRequestDTO cartRequestDTO) {
         
         var result = await _cartService.AddCart(cartRequestDTO);
 
@@ -29,10 +29,17 @@ public class CartController : ControllerBase
     }
 
     [HttpDelete("deleteCart/")]
-    public async Task<String> DeleteCartItem(int CartItemId)
+    public async Task<MessageRespondDTO> DeleteCartItem(int CartItemId)
     {
         var result = await _cartService.DeleteItemCart(CartItemId);
 
+        return result;
+    }
+
+    [HttpPut("updateCart/")]
+    public async Task<MessageRespondDTO> UpdateCartItem([FromBody] CartItemRequestDTO cartItemRequestDTO)
+    {
+        var result = await _cartService.UpdateItem(cartItemRequestDTO);
         return result;
     }
 }

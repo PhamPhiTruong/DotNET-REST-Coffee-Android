@@ -11,9 +11,8 @@ import android.widget.ToggleButton;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.nlu.packages.R;
-import com.nlu.packages.response_dto.MessageResponseDTO;
-import com.nlu.packages.response_dto.product.ProductResponseDTO;
-import com.nlu.packages.response_dto.wishlist.WishlistRequestDTO;
+import com.nlu.packages.dotnet_callapi.responsedto.MessageRespondDTO;
+import com.nlu.packages.dotnet_callapi.responsedto.ProductRespondeDTO;
 import com.nlu.packages.service.CoffeeApi;
 import com.nlu.packages.service.CoffeeService;
 import com.squareup.picasso.Picasso;
@@ -28,13 +27,11 @@ import java.util.List;
 //là phần code có thể mở rộng, nó là phần hỗ trợ giao diện cho mục Trend this month trên màn hình Home
 public class TrendThisMonthRvAdapter extends RecyclerView.Adapter<TrendThisMonthRvAdapter.MyHolder> {
     Context context;
-    ArrayList<ProductResponseDTO> data;
+    ArrayList<ProductRespondeDTO> data;
     private final TrendThisMonthRvInterface trendThisMonthRvInterface;
-    private CoffeeApi coffeeApi;
-    private List<Long> productIds = new ArrayList<>();
-    private WishlistRequestDTO wishlistRequestDTO = new WishlistRequestDTO();
+    private List<Integer> productIds = new ArrayList<>();
 
-    public TrendThisMonthRvAdapter(Context context, ArrayList<ProductResponseDTO> data, TrendThisMonthRvInterface trendThisMonthRvInterface) {
+    public TrendThisMonthRvAdapter(Context context, ArrayList<ProductRespondeDTO> data, TrendThisMonthRvInterface trendThisMonthRvInterface) {
         this.context = context;
         this.data = data != null ? data : new ArrayList<>();
         this.trendThisMonthRvInterface = trendThisMonthRvInterface;
@@ -48,84 +45,13 @@ public class TrendThisMonthRvAdapter extends RecyclerView.Adapter<TrendThisMonth
         return new MyHolder(view, trendThisMonthRvInterface);
     }
 
-    private void initFavorite() {
-        coffeeApi = CoffeeService.getClient();
-        Call<List<ProductResponseDTO>> call = coffeeApi.getWishList();
-        call.enqueue(new Callback<List<ProductResponseDTO>>() {
-            @Override
-            public void onResponse(Call<List<ProductResponseDTO>> call, Response<List<ProductResponseDTO>> response) {
-                List<ProductResponseDTO> responseDTOS = response.body();
-                if (response.isSuccessful()) {
-                    if (responseDTOS != null) {
-                        responseDTOS.forEach(e -> {
-                            if (!productIds.contains(e.getProductId())) {
-                                productIds.add(e.getProductId());
-                            }
-                        });
-                        wishlistRequestDTO.setProductIds(productIds);
-                    } else {
-                        System.out.println("Null List");
-                    }
-                } else {
-                    onFailure(call, new Throwable("Uncessfull Response"));
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<ProductResponseDTO>> call, Throwable throwable) {
-                System.out.println(throwable);
-            }
-        });
-        wishlistRequestDTO.setProductIds(productIds);
-    }
-
     @Override
     public void onBindViewHolder(@NonNull TrendThisMonthRvAdapter.MyHolder holder, int position) {
-        holder.textView1.setText(data.get(position).getProductName());
-        Picasso.get().load(data.get(position).getAvatar()).into(holder.imageView1);
-
-        initFavorite();
-        if(productIds.contains(data.get(position).getProductId())){
+        holder.textView1.setText(data.get(position).getName());
+        Picasso.get().load(data.get(position).getAvatarUrl()).into(holder.imageView1);
+        if(productIds.contains(data.get(position).getId())){
             holder.toggleButton.setChecked(true);
         }
-
-        // Lấy danh sách sản phẩm yêu thích từ API nếu chưa có
-        if (productIds == null) {
-            initFavorite();
-        }
-
-        //xử lý sự kiện cho toggle button
-        holder.toggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                productIds.clear();
-                wishlistRequestDTO.getProductIds().add(data.get(position).getProductId());
-                Call<MessageResponseDTO> call = coffeeApi.addToWishList(wishlistRequestDTO);
-                call.enqueue(new Callback<MessageResponseDTO>() {
-                    @Override
-                    public void onResponse(Call<MessageResponseDTO> call, Response<MessageResponseDTO> response) {
-                        Toast.makeText(context, "Added to Favorite", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onFailure(Call<MessageResponseDTO> call, Throwable throwable) {
-                        System.out.println(throwable);
-                    }
-                });
-            } else {
-                Call<MessageResponseDTO> call = coffeeApi.removeFromWishList(data.get(position).getProductId());
-                call.enqueue(new Callback<MessageResponseDTO>() {
-                    @Override
-                    public void onResponse(Call<MessageResponseDTO> call, Response<MessageResponseDTO> response) {
-                        Toast.makeText(context, "Removed from Favorite", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onFailure(Call<MessageResponseDTO> call, Throwable throwable) {
-                        System.out.println(throwable.getMessage());
-                    }
-                });
-            }
-        });
 
         // Xử lý sự kiện khi item được click
         holder.itemView.setOnClickListener(view -> {
@@ -169,7 +95,7 @@ public class TrendThisMonthRvAdapter extends RecyclerView.Adapter<TrendThisMonth
         }
     }
 
-    public void updateData(List<ProductResponseDTO> newList) {
+    public void updateData(List<ProductRespondeDTO> newList) {
         this.data.clear();
         this.data.addAll(newList);
         notifyDataSetChanged();

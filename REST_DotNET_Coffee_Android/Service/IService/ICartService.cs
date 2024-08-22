@@ -3,7 +3,9 @@
     // Future service here
     Task<CartResponseDTO> GetCart(int UserId);
 
-    Task<String> AddCart(CartRequestDTO crd);
+    Task<MessageRespondDTO> AddCart(CartRequestDTO crd);
 
-    Task<String> DeleteItemCart(int ItemCartId);
+    Task<MessageRespondDTO> DeleteItemCart(int ItemCartId);
+
+    Task<MessageRespondDTO> UpdateItem(CartItemRequestDTO cird);
 }

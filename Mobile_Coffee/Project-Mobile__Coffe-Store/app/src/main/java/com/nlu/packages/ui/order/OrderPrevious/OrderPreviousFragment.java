@@ -24,14 +24,11 @@ import java.util.List;
 public class OrderPreviousFragment extends Fragment implements PreviousAdapterInterface {
     private OrderResponseDTO orderResponse;
     private RecyclerView previous_recycleView;
-    private PreviousAdapter orderFavoriteAdapter;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_order_previous, container, false);
         previous_recycleView = view.findViewById(R.id.previous_recycleView);
-        orderFavoriteAdapter = new PreviousAdapter(getContext());
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        previous_recycleView.setAdapter(orderFavoriteAdapter);
         previous_recycleView.setLayoutManager(layoutManager);
         return view;
     }
@@ -54,7 +51,6 @@ public class OrderPreviousFragment extends Fragment implements PreviousAdapterIn
                         if (response.isSuccessful()) {
                             // Yêu cầu adapter update giao diện
                             orderResponse = response.body().get(0);
-                            orderFavoriteAdapter.renderView(orderResponse);
                             System.out.println(orderResponse);
                         } else {
                             System.out.println(response.code());

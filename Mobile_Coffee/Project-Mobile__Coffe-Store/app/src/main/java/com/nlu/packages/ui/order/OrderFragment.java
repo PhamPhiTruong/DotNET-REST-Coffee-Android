@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -16,9 +15,9 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.tabs.TabLayout;
 import com.nlu.packages.R;
-import com.nlu.packages.response_dto.product.ProductResponseDTO;
-import com.nlu.packages.service.CoffeeApi;
-import com.nlu.packages.service.CoffeeService;
+import com.nlu.packages.dotnet_callapi.responsedto.ProductRespondeDTO;
+import com.nlu.packages.dotnet_callapi.service.CoffeeApi;
+import com.nlu.packages.dotnet_callapi.service.CoffeeService;
 import com.nlu.packages.ui.order.OrderFavorite.OrderFavoriteFragment;
 import com.nlu.packages.ui.order.OrderMenu.OrderMenuFragment;
 import com.nlu.packages.ui.order.OrderPopular.OrderPopularFragment;
@@ -78,38 +77,6 @@ public class OrderFragment extends Fragment {
             @Override
             public void onPageScrollStateChanged(int i) {
 
-            }
-        });
-
-        //xử lý sự kiện tìm kiếm, tra cứu thông tin
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                Call<List<ProductResponseDTO>> call = coffeeApi.searchProduct(query);
-                call.enqueue(new Callback<List<ProductResponseDTO>>() {
-                    @Override
-                    public void onResponse(Call<List<ProductResponseDTO>> call, Response<List<ProductResponseDTO>> response) {
-                        List<ProductResponseDTO> responseDTOS = response.body();
-                        if(responseDTOS.isEmpty()){
-                            Toast.makeText(getContext(),"Không tìm thấy", Toast.LENGTH_SHORT).show();
-                        }else{
-                            Intent intent = new Intent(OrderFragment.this.getContext(), ProductSearch.class);
-                            intent.putExtra("ProductOrder", (ArrayList<ProductResponseDTO>) responseDTOS);
-                            startActivity(intent);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<List<ProductResponseDTO>> call, Throwable throwable) {
-                        System.out.println(throwable);
-                    }
-                });
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
             }
         });
 
