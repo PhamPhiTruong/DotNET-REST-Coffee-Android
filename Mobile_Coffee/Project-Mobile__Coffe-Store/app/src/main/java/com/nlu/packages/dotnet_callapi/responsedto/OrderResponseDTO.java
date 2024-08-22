@@ -22,4 +22,8 @@ public class OrderResponseDTO {
         }
         return result;
     }
+
+    public List<OrderItemResponseDTO> getList() {
+        return itemOrderList;
+    }
 }

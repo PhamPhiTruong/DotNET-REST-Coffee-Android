@@ -12,12 +12,17 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 import com.bumptech.glide.Glide;
 import com.nlu.packages.R;
+import com.nlu.packages.dotnet_callapi.responsedto.IngredientRespondeDTO;
 import com.nlu.packages.enums.EIngredient;
 import com.nlu.packages.enums.EProductSize;
-import com.nlu.packages.request_dto.cart.CartItemRequestDTO;
-import com.nlu.packages.response_dto.MessageResponseDTO;
-import com.nlu.packages.response_dto.product.ProductResponseDTO;
-import com.nlu.packages.service.CoffeeService;
+//import com.nlu.packages.request_dto.cart.CartItemRequestDTO;
+import com.nlu.packages.dotnet_callapi.requestdto.CartRequestDTO;
+//import com.nlu.packages.response_dto.MessageResponseDTO;
+import com.nlu.packages.dotnet_callapi.responsedto.MessageRespondDTO;
+//import com.nlu.packages.response_dto.product.ProductResponseDTO;
+import com.nlu.packages.dotnet_callapi.responsedto.ProductRespondeDTO;
+//import com.nlu.packages.service.CoffeeService;
+import com.nlu.packages.dotnet_callapi.service.CoffeeService;
 import com.nlu.packages.ui.cart.CartActivity;
 import com.nlu.packages.utils.MyUtils;
 import lombok.var;
@@ -45,20 +50,20 @@ public class DetailOrderCoffeeFragment extends Fragment {
     private AppCompatButton plusButtonQuantity;
 
     private TextView quantityText;
-    public static List<ProductResponseDTO> products;
+    public static List<ProductRespondeDTO> products;
     private ImageView productPicture;
     private TextView productName, priceProduct, priceTotal;
     private AppCompatButton addToCartButton;
-    private CartItemRequestDTO requestDTO;
+    private CartRequestDTO requestDTO;
 
     public static List<String> sz = new ArrayList<>();
     public static List<String> milks = new ArrayList<>();
     public static List<String> toppings = new ArrayList<>();
     public static List<String> sweeteners = new ArrayList<>();
     private static Map<String, EProductSize> sz_Map = new HashMap<>();
-    private static Map<String, ProductResponseDTO.IngredientDTO> milks_Map = new HashMap<>();
-    private static Map<String, ProductResponseDTO.IngredientDTO> toppings_Map = new HashMap<>();
-    private static Map<String, ProductResponseDTO.IngredientDTO> sweeteners_Map = new HashMap<>();
+    private static Map<String, IngredientRespondeDTO> milks_Map = new HashMap<>();
+    private static Map<String, IngredientRespondeDTO> toppings_Map = new HashMap<>();
+    private static Map<String, IngredientRespondeDTO> sweeteners_Map = new HashMap<>();
 
     public DetailOrderCoffeeFragment() {
         // Required empty public constructor
@@ -106,15 +111,15 @@ public class DetailOrderCoffeeFragment extends Fragment {
         addToCartButton.setOnClickListener(btn -> {
             String token = MyUtils.get(getActivity(), "token");
             CoffeeService.getRetrofitInstance(token)
-                    .putItem(requestDTO).enqueue(new Callback<MessageResponseDTO>() {
+                    .putItem(requestDTO).enqueue(new Callback<MessageRespondDTO>() {
                         @Override
-                        public void onResponse(Call<MessageResponseDTO> call, Response<MessageResponseDTO> response) {
+                        public void onResponse(Call<MessageRespondDTO> call, Response<MessageRespondDTO> response) {
                             Intent intent = new Intent(getActivity(), CartActivity.class);
                             startActivity(intent);
                         }
 
                         @Override
-                        public void onFailure(Call<MessageResponseDTO> call, Throwable throwable) {
+                        public void onFailure(Call<MessageRespondDTO> call, Throwable throwable) {
                             throwable.printStackTrace();
                             throw new RuntimeException(throwable);
                         }
@@ -134,8 +139,8 @@ public class DetailOrderCoffeeFragment extends Fragment {
             quantityText.setText(String.valueOf(++currentQuantity));
             calculatePrice(products.get(0));
         });
-        List<ProductResponseDTO> productResponseDTO =
-                (List<ProductResponseDTO>) getActivity().getIntent().getSerializableExtra("productOrder");
+        List<ProductRespondeDTO> productResponseDTO =
+                (List<ProductRespondeDTO>) getActivity().getIntent().getSerializableExtra("productOrder");
         products = productResponseDTO;
         updateUI();
     }
@@ -143,35 +148,33 @@ public class DetailOrderCoffeeFragment extends Fragment {
     private void updateUI() {
         if (products == null || products.isEmpty()) return;
 
-        ProductResponseDTO product = products.get(0);
-        Glide.with(getContext()).load(product.getAvatar()).into(productPicture);
-        productName.setText(product.getProductName());
+        ProductRespondeDTO product = products.get(0);
+        Glide.with(getContext()).load(product.getAvatarUrl()).into(productPicture);
+        productName.setText(product.getName());
         priceProduct.setText(String.valueOf(product.getBasePrice()));
 
         sz.clear();
         milks.clear();
         toppings.clear();
         sweeteners.clear();
-        for (ProductResponseDTO.ProductSizeDTO size : product.getAvailableSizes()) {
-            sz.add(size.getSizeEnum().name());
-            sz_Map.put(size.getSizeEnum().name(), size.getSizeEnum());
-        }
 
-        for (ProductResponseDTO.IngredientDTO ingredient : product.getAvailableIngredients()) {
-            switch (ingredient.getIngredientType()) {
-                case MILKS:
-                    milks.add(ingredient.getIngredientName());
-                    milks_Map.put(ingredient.getIngredientName(), ingredient);
+        for (ProductRespondeDTO p : products) {
+            switch (product.getType()) {
+                case "MILKS":
+                    milks.add(p.getType());
+                    milks_Map.put(p.getType(), null);
                     break;
-                case TOPPINGS:
-                    toppings.add(ingredient.getIngredientName());
-                    toppings_Map.put(ingredient.getIngredientName(), ingredient);
+                case "TOPPINGS":
+                    toppings.add(p.getType());
+                    toppings_Map.put(p.getType(), null);
                     break;
-                case SWEETENERS:
-                    sweeteners.add(ingredient.getIngredientName());
-                    sweeteners_Map.put(ingredient.getIngredientName(), ingredient);
+                case "SWEETENERS":
+                    sweeteners.add(p.getType());
+                    sweeteners_Map.put(p.getType(), null);
                     break;
             }
+        }
+
             calculatePrice(products.get(0));
         }
 
@@ -230,41 +233,37 @@ public class DetailOrderCoffeeFragment extends Fragment {
         sweeteners.clear();
     }
 
-    public void calculatePrice(ProductResponseDTO dto) {
+    public void calculatePrice(ProductRespondeDTO dto) {
         EProductSize size = null;
-        var txtSize = ((TextView) spnSize.getSelectedView());
-        String sizeStr = txtSize != null ? txtSize.getText().toString() : null;
-        size = sz_Map.get(sizeStr);
-        List<EIngredient> list = new ArrayList<>();
+        List<String> list = new ArrayList<>();
         double ingredientsPrice = 0d;
         var txtMilk = ((TextView)spnMilk.getSelectedView());
         String milk = txtMilk != null ? txtMilk.getText().toString() : null;
         if (milk != null && !milk.isEmpty()) {
             var ie = milks_Map.get(milk);
             ingredientsPrice += ie.getAddPrice();
-            list.add(ie.getIngredientEnum());
+            list.add(ie.getIngredientEnum().toString());
         }
         var txtSweet = ((TextView)spnSweet.getSelectedView());
         String sweet = txtSweet != null ? txtSweet.getText().toString() : null;
         if (sweet != null && !sweet.isEmpty()) {
             var ie = sweeteners_Map.get(sweet);
             ingredientsPrice += ie.getAddPrice();
-            list.add(ie.getIngredientEnum());
+            list.add(ie.getIngredientEnum().toString());
         }
         var txtTopping = ((TextView)spnToppings.getSelectedView());
         String topping = txtTopping != null ? txtTopping.getText().toString() : null;
         if (topping != null && !topping.isEmpty()) {
             var ie = toppings_Map.get(topping);
             ingredientsPrice += ie.getAddPrice();
-            list.add(ie.getIngredientEnum());
+            list.add(ie.getIngredientEnum().toString());
         }
         int quantity = Integer.valueOf(quantityText.getText().toString());
         double basePrice = dto.getBasePrice();
-        requestDTO = CartItemRequestDTO.builder()
+        requestDTO = CartRequestDTO.builder()
                 .quantity(quantity)
-                .ingredients(list)
-                .size(size)
-                .productId(dto.getProductId())
+                .ingredientList(list)
+                .productId((int) dto.getProductId())
                 .build();
         float multipler = size != null ? size.getMultipler() : 1;
         var price = (basePrice + ingredientsPrice) * multipler * quantity;

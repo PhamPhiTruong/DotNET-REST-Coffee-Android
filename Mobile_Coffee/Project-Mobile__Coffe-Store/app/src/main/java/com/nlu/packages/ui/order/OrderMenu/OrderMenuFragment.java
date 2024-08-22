@@ -9,14 +9,18 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.nlu.packages.R;
-import com.nlu.packages.response_dto.product.ProductResponseDTO;
-import com.nlu.packages.service.CoffeeApi;
-import com.nlu.packages.service.CoffeeService;
+//import com.nlu.packages.response_dto.product.ProductResponseDTO;
+import com.nlu.packages.dotnet_callapi.responsedto.ProductRespondeDTO;
+//import com.nlu.packages.service.CoffeeApi;
+import com.nlu.packages.dotnet_callapi.service.CoffeeApi;
+//import com.nlu.packages.service.CoffeeService;
+import com.nlu.packages.dotnet_callapi.service.CoffeeService;
 import com.nlu.packages.ui.cart.CartActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +29,7 @@ public class OrderMenuFragment extends Fragment implements OrderMenuRvInterface 
     public OrderMenuRvAdapter orderMenuAdapter;
     RecyclerView orderMenuRv;
     CoffeeApi coffeeApi;
-    private List<ProductResponseDTO> dataSource=new ArrayList<>();
+    private List<ProductRespondeDTO> dataSource=new ArrayList<>();
 
     public OrderMenuFragment() {
     }
@@ -56,22 +60,22 @@ public class OrderMenuFragment extends Fragment implements OrderMenuRvInterface 
     //fetch data from api
     public void getListCoffee() {
         coffeeApi = CoffeeService.getClient();
-        Call<List<ProductResponseDTO>> call = coffeeApi.getAllProduct();
-        call.enqueue(new Callback<List<ProductResponseDTO>>() {
+        Call<List<ProductRespondeDTO>> call = coffeeApi.getAllProduct();
+        call.enqueue(new Callback<List<ProductRespondeDTO>>() {
             @Override
-            public void onResponse(Call<List<ProductResponseDTO>> call, Response<List<ProductResponseDTO>> response) {
+            public void onResponse(Call<List<ProductRespondeDTO>> call, Response<List<ProductRespondeDTO>> response) {
                 if (response.isSuccessful()) {
                     //get the response
                     dataSource = response.body();
                     orderMenuAdapter.updateData(dataSource);
-                    dataSource.forEach(i-> System.out.println(i.getProductId()+ ""));
+                    dataSource.forEach(i-> System.out.println(i.getId()+ ""));
                 } else {
                     System.out.println("lỗi lấy data");
                 }
             }
 
             @Override
-            public void onFailure(Call<List<ProductResponseDTO>> call, Throwable throwable) {
+            public void onFailure(Call<List<ProductRespondeDTO>> call, Throwable throwable) {
                 System.out.println(throwable.getMessage());
             }
         });
@@ -81,7 +85,7 @@ public class OrderMenuFragment extends Fragment implements OrderMenuRvInterface 
     public void onClickedMenuItem(int position) {
         Intent intent = new Intent(OrderMenuFragment.this.getContext(), CartActivity.class);
 
-        intent.putExtra("ProductOrder", dataSource.get(position));
+        intent.putExtra("ProductOrder", (Serializable) dataSource.get(position));
 
         startActivity(intent);
     }

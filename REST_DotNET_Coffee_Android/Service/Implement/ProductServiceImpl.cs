@@ -60,37 +60,6 @@ public class ProductServiceImpl : AService<Product>, IProductService
             return null;
         }
     }
-        
-    // From list of Product to list of DTO
-    private static List<ProductRespondeDTO> ToListDTO(List<Product> products)
-    {
-
-        if (products is null)
-        {
-            throw new ProductException("An product list should not be null here.");
-        }
-
-        if (products == null || products.Count == 0) return null;
-
-        List<ProductRespondeDTO> productJSONs = new List<ProductRespondeDTO>();
-
-        products.ForEach((Action<Product>)(p =>
-        {
-            productJSONs.Add(new ProductRespondeDTO
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Type = p.Type,
-                Active = Convert.ToBoolean(p.Active),
-                AvatarUrl = p.AvatarUrl,
-                BasePrice = Convert.ToDouble(p.BasePrice),
-                CategoryId = Convert.ToInt32(p.CategoryId),
-                Quantities = Convert.ToInt32(p.Quantities)
-            });
-        }));
-
-        return productJSONs;
-    }
 
     // Update product
     private static Product Update(Product product, ProductRequestDTO request)
@@ -144,7 +113,7 @@ public class ProductServiceImpl : AService<Product>, IProductService
     //
     // Remarks:
     //     See Using GetAllProduct and GetProductById for more information and examples.
-    public async Task<ActionResult<List<ProductRespondeDTO>>> GetAllProduct()
+    public async Task<List<ProductRespondeDTO>> GetAllProduct()
     {
         var products = await _context.Products.ToListAsync<Product>();
 
@@ -153,7 +122,45 @@ public class ProductServiceImpl : AService<Product>, IProductService
             return null;
         }
 
-        return ToListDTO(products);
+        List<ProductRespondeDTO> productJSONs = new List<ProductRespondeDTO>();
+
+        products.ForEach(p =>
+        {
+            productJSONs.Add(new ProductRespondeDTO
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Type = p.Type,
+                Active = Convert.ToBoolean(p.Active),
+                AvatarUrl = p.AvatarUrl,
+                BasePrice = Convert.ToDouble(p.BasePrice),
+                CategoryId = Convert.ToInt32(p.CategoryId),
+                Quantities = Convert.ToInt32(p.Quantities),
+                Ingredients = new List<IngredientRespondeDTO>()
+            });
+        });
+
+        for (int i = 0; i < productJSONs.Count; i++)
+        {
+            List<HavingIngredient> list = await _context.HavingIngredients.ToListAsync<HavingIngredient>();
+            for (int j = 0; j < list.Count; j++)
+            {
+                if (productJSONs[i].Id == list[j].ProductId)
+                {
+                    //productJSONs[i].Ingredients.Add(await _context.Ingredients.FindAsync(list[j].IngredientId));
+                    Ingredient ingredient = await _context.Ingredients.FindAsync(list[j].IngredientId);
+                    IngredientRespondeDTO ingredientRespondeDTO = new IngredientRespondeDTO
+                    {
+                        Name = ingredient.Name,
+                        AddPrice = ingredient.AddPrice,
+                        Type = ingredient.Type
+                    };
+                    productJSONs[i].Ingredients.Add(ingredientRespondeDTO);
+                }
+            }
+        }
+
+        return productJSONs;
     }
 
     //
@@ -174,7 +181,7 @@ public class ProductServiceImpl : AService<Product>, IProductService
     //
     // Remarks:
     //     See Using GetAllProduct and GetProductById for more information and examples.
-    public async Task<ActionResult<ProductRespondeDTO>> GetProductById(int id)
+    public async Task<ProductRespondeDTO> GetProductById(int id)
     {
         if (id <= 0)
         {
@@ -219,7 +226,7 @@ public class ProductServiceImpl : AService<Product>, IProductService
     //
     // Remarks:
     //     See Using GetAllProduct and GetProductById for more information and examples.
-    public async Task<ActionResult<List<ProductRespondeDTO>>> GetProductWithType(EProductType type)
+    public async Task<List<ProductRespondeDTO>> GetProductWithType(EProductType type)
     {
 
         if (type <= 0)
@@ -236,7 +243,46 @@ public class ProductServiceImpl : AService<Product>, IProductService
         if (products is null || products.Count == 0)
             return null;
 
-        return ToListDTO(products);
+
+        List<ProductRespondeDTO> productJSONs = new List<ProductRespondeDTO>();
+
+        products.ForEach(p =>
+        {
+            productJSONs.Add(new ProductRespondeDTO
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Type = p.Type,
+                Active = Convert.ToBoolean(p.Active),
+                AvatarUrl = p.AvatarUrl,
+                BasePrice = Convert.ToDouble(p.BasePrice),
+                CategoryId = Convert.ToInt32(p.CategoryId),
+                Quantities = Convert.ToInt32(p.Quantities),
+                Ingredients = new List<IngredientRespondeDTO>()
+            });
+        });
+
+        for (int i = 0; i < productJSONs.Count; i++)
+        {
+            List<HavingIngredient> list = await _context.HavingIngredients.ToListAsync<HavingIngredient>();
+            for (int j = 0; j < list.Count; j++)
+            {
+                if (productJSONs[i].Id == list[j].ProductId)
+                {
+                    //productJSONs[i].Ingredients.Add(await _context.Ingredients.FindAsync(list[j].IngredientId));
+                    Ingredient ingredient = await _context.Ingredients.FindAsync(list[j].IngredientId);
+                    IngredientRespondeDTO ingredientRespondeDTO = new IngredientRespondeDTO
+                    {
+                        Name = ingredient.Name,
+                        AddPrice = ingredient.AddPrice,
+                        Type = ingredient.Type
+                    };
+                    productJSONs[i].Ingredients.Add(ingredientRespondeDTO);
+                }
+            }
+        }
+
+        return productJSONs;
     }
 
     //
@@ -257,7 +303,7 @@ public class ProductServiceImpl : AService<Product>, IProductService
     //
     // Remarks:
     //     See Using GetAllProduct and GetProductById for more information and examples.
-    public async Task<ActionResult<List<ProductRespondeDTO>>> GetProductByCategory(string category)
+    public async Task<List<ProductRespondeDTO>> GetProductByCategory(string category)
     {
         if (string.IsNullOrEmpty(category)) throw new CategoryException();
 
@@ -267,7 +313,46 @@ public class ProductServiceImpl : AService<Product>, IProductService
 
         if (products is null || products.Count == 0) return null;
 
-        return ToListDTO(products);
+
+        List<ProductRespondeDTO> productJSONs = new List<ProductRespondeDTO>();
+
+        products.ForEach(p =>
+        {
+            productJSONs.Add(new ProductRespondeDTO
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Type = p.Type,
+                Active = Convert.ToBoolean(p.Active),
+                AvatarUrl = p.AvatarUrl,
+                BasePrice = Convert.ToDouble(p.BasePrice),
+                CategoryId = Convert.ToInt32(p.CategoryId),
+                Quantities = Convert.ToInt32(p.Quantities),
+                Ingredients = new List<IngredientRespondeDTO>()
+            });
+        });
+
+        for (int i = 0; i < productJSONs.Count; i++)
+        {
+            List<HavingIngredient> list = await _context.HavingIngredients.ToListAsync<HavingIngredient>();
+            for (int j = 0; j < list.Count; j++)
+            {
+                if (productJSONs[i].Id == list[j].ProductId)
+                {
+                    //productJSONs[i].Ingredients.Add(await _context.Ingredients.FindAsync(list[j].IngredientId));
+                    Ingredient ingredient = await _context.Ingredients.FindAsync(list[j].IngredientId);
+                    IngredientRespondeDTO ingredientRespondeDTO = new IngredientRespondeDTO
+                    {
+                        Name = ingredient.Name,
+                        AddPrice = ingredient.AddPrice,
+                        Type = ingredient.Type
+                    };
+                    productJSONs[i].Ingredients.Add(ingredientRespondeDTO);
+                }
+            }
+        }
+
+        return productJSONs;
     }
 
     //
@@ -287,7 +372,7 @@ public class ProductServiceImpl : AService<Product>, IProductService
     //
     // Remarks:
     //     See Using UpdateProduct for more information and examples.
-    public async Task<ActionResult<List<ProductRespondeDTO>>> AddProduct(ProductRequestDTO request)
+    public async Task<List<ProductRespondeDTO>> AddProduct(ProductRequestDTO request)
     {
         // If given product is null
         if (request is null)
@@ -326,7 +411,7 @@ public class ProductServiceImpl : AService<Product>, IProductService
     //
     // Remarks:
     //     See Using AddProduct for more information and examples.
-    public async Task<ActionResult<List<ProductRespondeDTO>>> UpdateProduct(ProductRequestDTO request)
+    public async Task<List<ProductRespondeDTO>> UpdateProduct(ProductRequestDTO request)
     {
         if (request is null)
         {
@@ -371,7 +456,7 @@ public class ProductServiceImpl : AService<Product>, IProductService
     //
     // Remarks:
     //     See Using AddProduct for more information and examples.
-    public async Task<ActionResult<List<ProductRespondeDTO>>> DeleteProduct(int id)
+    public async Task<List<ProductRespondeDTO>> DeleteProduct(int id)
     {
         if (id < 0)
         {

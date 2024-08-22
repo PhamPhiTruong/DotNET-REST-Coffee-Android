@@ -1,4 +1,6 @@
-﻿public class ProductRespondeDTO
+﻿#nullable disable
+
+public class ProductRespondeDTO
 {
     public int Id { get; set; }
 
@@ -15,4 +17,6 @@
     public int CategoryId { get; set; }
 
     public string AvatarUrl { get; set; } = String.Empty;
+
+    public List<IngredientRespondeDTO> Ingredients { get; set; }
 }

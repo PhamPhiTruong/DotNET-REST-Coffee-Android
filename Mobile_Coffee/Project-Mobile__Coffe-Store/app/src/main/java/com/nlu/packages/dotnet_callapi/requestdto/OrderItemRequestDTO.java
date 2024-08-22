@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class OrderItemRequestDTO {
-    private int poductId;
+    private int productId;
     private int quantity;
     private List<String> addIngredients;
 }

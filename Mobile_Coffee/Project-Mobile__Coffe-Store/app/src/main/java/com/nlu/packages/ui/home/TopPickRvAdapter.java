@@ -11,10 +11,13 @@ import android.widget.ToggleButton;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.nlu.packages.R;
-import com.nlu.packages.response_dto.MessageResponseDTO;
-import com.nlu.packages.response_dto.product.ProductResponseDTO;
+//import com.nlu.packages.response_dto.MessageResponseDTO;
+import com.nlu.packages.dotnet_callapi.responsedto.MessageRespondDTO;
+//import com.nlu.packages.response_dto.product.ProductResponseDTO;
+import com.nlu.packages.dotnet_callapi.responsedto.ProductRespondeDTO;
 import com.nlu.packages.response_dto.wishlist.WishlistRequestDTO;
-import com.nlu.packages.service.CoffeeApi;
+//import com.nlu.packages.service.CoffeeApi;
+import com.nlu.packages.dotnet_callapi.service.CoffeeApi;
 import com.nlu.packages.service.CoffeeService;
 import com.squareup.picasso.Picasso;
 import retrofit2.Call;
@@ -30,22 +33,22 @@ import java.util.function.Consumer;
 //trợ hiển thị giao diện cho phần Top Pick Coffee trên màn hình Home
 class TopPickRvAdapter extends RecyclerView.Adapter<TopPickRvAdapter.MyHolder> {
     private final TopCoffeeRvInterface topCoffeeRvInterface;
-    ArrayList<ProductResponseDTO> data;
+    ArrayList<ProductRespondeDTO> data;
     Context context;
-    private Consumer<ProductResponseDTO> onClickHandler;
+    private Consumer<ProductRespondeDTO> onClickHandler;
     private CoffeeApi coffeeApi;
     private List<Long> productIds = new ArrayList<>();
     private WishlistRequestDTO wishlistRequestDTO = new WishlistRequestDTO();
 
-    public TopPickRvAdapter(Context context, ArrayList<ProductResponseDTO> data, TopCoffeeRvInterface topCoffeeRvInterface) {
+    public TopPickRvAdapter(Context context, ArrayList<ProductRespondeDTO> data, TopCoffeeRvInterface topCoffeeRvInterface) {
         this.context = context;
         this.data = data != null ? data : new ArrayList<>();
         this.topCoffeeRvInterface = topCoffeeRvInterface;
     }
 
-    public TopPickRvAdapter(Context context, ArrayList<ProductResponseDTO> data,
+    public TopPickRvAdapter(Context context, ArrayList<ProductRespondeDTO> data,
                             TopCoffeeRvInterface topCoffeeRvInterface,
-                            Consumer<ProductResponseDTO> onClickHandler) {
+                            Consumer<ProductRespondeDTO> onClickHandler) {
         this.context = context;
         this.data = data != null ? data : new ArrayList<>();
         this.topCoffeeRvInterface = topCoffeeRvInterface;
@@ -62,87 +65,87 @@ class TopPickRvAdapter extends RecyclerView.Adapter<TopPickRvAdapter.MyHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull MyHolder holder, int position) {
-        holder.textView2.setText(data.get(position).getProductName());
-        Picasso.get().load(data.get(position).getAvatar()).into(holder.imageView2);
+        holder.textView2.setText(data.get(position).getName());
+        Picasso.get().load(data.get(position).getAvatarUrl()).into(holder.imageView2);
         holder.renderView(data.get(position));
 
-        initFavorite();
-        if(productIds.contains(data.get(position).getProductId())){
+//        initFavorite();
+        if(productIds.contains(data.get(position).getId())){
             holder.toggleButton.setChecked(true);
         }
 
         // Lấy danh sách sản phẩm yêu thích từ API nếu chưa có
         if (productIds == null) {
-            initFavorite();
+//            initFavorite();
         }
 
-        //xử lý sự kiện cho `add to favorite`
-        holder.toggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                initFavorite();
-                productIds.clear();
-                wishlistRequestDTO.getProductIds().add(data.get(position).getProductId());
-                Call<MessageResponseDTO> call = coffeeApi.addToWishList(wishlistRequestDTO);
-                call.enqueue(new Callback<MessageResponseDTO>() {
-                    @Override
-                    public void onResponse(Call<MessageResponseDTO> call, Response<MessageResponseDTO> response) {
-                        Toast.makeText(context, "Added to Favorite", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onFailure(Call<MessageResponseDTO> call, Throwable throwable) {
-                        System.out.println(throwable);
-                    }
-                });
-            } else {
-                initFavorite();
-                if(wishlistRequestDTO.getProductIds().contains(data.get(position).getProductId())){
-                    wishlistRequestDTO.getProductIds().clear();
-                    wishlistRequestDTO.getProductIds().add(data.get(position).getProductId());
-                }
-                Call<MessageResponseDTO> call = coffeeApi.removeFromWishList(data.get(position).getProductId());
-                call.enqueue(new Callback<MessageResponseDTO>() {
-                    @Override
-                    public void onResponse(Call<MessageResponseDTO> call, Response<MessageResponseDTO> response) {
-                        Toast.makeText(context, "Removed from Favorite", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onFailure(Call<MessageResponseDTO> call, Throwable throwable) {
-                        System.out.println(throwable);
-                    }
-                });
-            }
-        });
+//        xử lý sự kiện cho `add to favorite`
+//        holder.toggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
+//            if (isChecked) {
+//                initFavorite();
+//                productIds.clear();
+//                wishlistRequestDTO.getProductIds().add(data.get(position).getId());
+//                Call<MessageRespondDTO> call = coffeeApi.addToWishList(wishlistRequestDTO);
+//                call.enqueue(new Callback<MessageRespondDTO>() {
+//                    @Override
+//                    public void onResponse(Call<MessageRespondDTO> call, Response<MessageRespondDTO> response) {
+//                        Toast.makeText(context, "Added to Favorite", Toast.LENGTH_SHORT).show();
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<MessageRespondDTO> call, Throwable throwable) {
+//                        System.out.println(throwable);
+//                    }
+//                });
+//            } else {
+//                initFavorite();
+//                if(wishlistRequestDTO.getProductIds().contains(data.get(position).getProductId())){
+//                    wishlistRequestDTO.getProductIds().clear();
+//                    wishlistRequestDTO.getProductIds().add(data.get(position).getProductId());
+//                }
+//                Call<MessageResponseDTO> call = coffeeApi.removeFromWishList(data.get(position).getProductId());
+//                call.enqueue(new Callback<MessageRespondDTO>() {
+//                    @Override
+//                    public void onResponse(Call<MessageRespondDTO> call, Response<MessageRespondDTO> response) {
+//                        Toast.makeText(context, "Removed from Favorite", Toast.LENGTH_SHORT).show();
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<MessageRespondDTO> call, Throwable throwable) {
+//                        System.out.println(throwable);
+//                    }
+//                });
+//            }
+//        });
     }
 
     //khởi tạo init favorite để lấy dữ liệu từ api
-    private void initFavorite() {
-        coffeeApi = CoffeeService.getClient();
-        Call<List<ProductResponseDTO>> call = coffeeApi.getWishList();
-        call.enqueue(new Callback<List<ProductResponseDTO>>() {
-            @Override
-            public void onResponse(Call<List<ProductResponseDTO>> call, Response<List<ProductResponseDTO>> response) {
-                List<ProductResponseDTO> responseDTOS = response.body();
-                if (responseDTOS != null) {
-                    responseDTOS.forEach(e -> {
-                        if (!productIds.contains(e.getProductId())) {
-                            productIds.add(e.getProductId());
-                        }
-                    });
-                    wishlistRequestDTO.setProductIds(productIds);
-                } else {
-                    System.out.println("Null List");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<ProductResponseDTO>> call, Throwable throwable) {
-                System.out.println(throwable);
-            }
-        });
-        wishlistRequestDTO.setProductIds(productIds);
-    }
+//    private void initFavorite() {
+//        coffeeApi = CoffeeService.getClient();
+//        Call<List<ProductRespondeDTO>> call = coffeeApi.getWishList();
+//        call.enqueue(new Callback<List<ProductRespondeDTO>>() {
+//            @Override
+//            public void onResponse(Call<List<ProductRespondeDTO>> call, Response<List<ProductRespondeDTO>> response) {
+//                List<ProductRespondeDTO> responseDTOS = response.body();
+//                if (responseDTOS != null) {
+//                    responseDTOS.forEach(e -> {
+//                        if (!productIds.contains(e.getId())) {
+//                            productIds.add(e.getId());
+//                        }
+//                    });
+//                    wishlistRequestDTO.setProductIds(productIds);
+//                } else {
+//                    System.out.println("Null List");
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<List<ProductRespondeDTO>> call, Throwable throwable) {
+//                System.out.println(throwable);
+//            }
+//        });
+//        wishlistRequestDTO.setProductIds(productIds);
+//    }
 
     @Override
     public int getItemCount() {
@@ -175,14 +178,14 @@ class TopPickRvAdapter extends RecyclerView.Adapter<TopPickRvAdapter.MyHolder> {
                 }
             });
         }
-        public void renderView(ProductResponseDTO productResponseDTO) {
+        public void renderView(ProductRespondeDTO ProductRespondeDTO) {
             imageView2.setOnClickListener(v -> {
-                onClickHandler.accept(productResponseDTO);
+                onClickHandler.accept(ProductRespondeDTO);
             });
         }
     }
 
-    public void updateData(List<ProductResponseDTO> newList) {
+    public void updateData(List<ProductRespondeDTO> newList) {
         this.data.clear();
         this.data.addAll(newList);
         notifyDataSetChanged();

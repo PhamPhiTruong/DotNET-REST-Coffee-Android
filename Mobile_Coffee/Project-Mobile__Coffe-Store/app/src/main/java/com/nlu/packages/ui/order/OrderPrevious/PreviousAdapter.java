@@ -10,8 +10,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.nlu.packages.R;
-import com.nlu.packages.response_dto.order.OrderResponseDTO;
-import com.nlu.packages.response_dto.product.ProductResponseDTO;
+//import com.nlu.packages.response_dto.order.OrderResponseDTO;
+//import com.nlu.packages.response_dto.product.ProductResponseDTO;
+import com.nlu.packages.dotnet_callapi.responsedto.OrderItemResponseDTO;
+import com.nlu.packages.dotnet_callapi.responsedto.OrderResponseDTO;
 import com.squareup.picasso.Picasso;
 import lombok.var;
 
@@ -35,14 +37,14 @@ public class PreviousAdapter extends RecyclerView.Adapter<PreviousAdapter.MyHold
     @Override
     public void onBindViewHolder(@NonNull MyHolder holder, int position) {
         var list = data == null ?
-                new ArrayList<OrderResponseDTO.OrderItemDTO>() : data.getList();
+                new ArrayList<OrderItemResponseDTO>() : data.getList();
         holder.renderView(list.get(position));
     }
 
     @Override
     public int getItemCount() {
         var list = data == null ?
-                new ArrayList<OrderResponseDTO.OrderItemDTO>() : data.getList();
+                new ArrayList<OrderItemResponseDTO>() : data.getList();
         return list.size();
     }
 
@@ -60,11 +62,11 @@ public class PreviousAdapter extends RecyclerView.Adapter<PreviousAdapter.MyHold
             priceTitle = itemView.findViewById(R.id.priceTitle);
         }
 
-        public void renderView(OrderResponseDTO.OrderItemDTO orderItemDTO) {
+        public void renderView(OrderItemResponseDTO orderItemDTO) {
             if (orderItemDTO == null) return;
-            nameProduct.setText(orderItemDTO.getProduct().getProductName());
+            nameProduct.setText(orderItemDTO.getProductName());
             Picasso.get()
-                    .load(orderItemDTO.getProduct().getAvatar())
+                    .load(orderItemDTO.getProductName())
                     .into(imageView1);
             priceTitle.setText(orderItemDTO.getPrice()+"đ");
         }

@@ -10,21 +10,25 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.nlu.packages.R;
-import com.nlu.packages.response_dto.product.ProductResponseDTO;
-import com.nlu.packages.service.CoffeeApi;
-import com.nlu.packages.service.CoffeeService;
+//import com.nlu.packages.response_dto.product.ProductResponseDTO;
+import com.nlu.packages.dotnet_callapi.responsedto.ProductRespondeDTO;
+//import com.nlu.packages.service.CoffeeApi;
+import com.nlu.packages.dotnet_callapi.service.CoffeeApi;
+//import com.nlu.packages.service.CoffeeService;
+import com.nlu.packages.dotnet_callapi.service.CoffeeService;
 import com.nlu.packages.ui.cart.CartActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class OrderPopularFragment extends Fragment implements TrendThisMonthRvInterface, PopularDrinksRvInterface {
     //data source
-    private List<ProductResponseDTO> trendThisMonthDataSource, popularDrinksDataSource = new ArrayList<>();
+    private List<ProductRespondeDTO> trendThisMonthDataSource, popularDrinksDataSource = new ArrayList<>();
 
     //adapter
     TrendThisMonthRvAdapter trendThisMonthRvAdapter;
@@ -52,7 +56,7 @@ public class OrderPopularFragment extends Fragment implements TrendThisMonthRvIn
 
         //setting the `trend this month` adapter
         linearLayoutManager = new LinearLayoutManager(OrderPopularFragment.this.getContext(), LinearLayoutManager.HORIZONTAL, false);
-        trendThisMonthRvAdapter = new TrendThisMonthRvAdapter(this.getContext(), (ArrayList<ProductResponseDTO>) trendThisMonthDataSource, this);
+        trendThisMonthRvAdapter = new TrendThisMonthRvAdapter(this.getContext(), (ArrayList<ProductRespondeDTO>) trendThisMonthDataSource, this);
         trendThisMonthRv.setLayoutManager(linearLayoutManager);
         trendThisMonthRv.setAdapter(trendThisMonthRvAdapter);
 
@@ -62,7 +66,7 @@ public class OrderPopularFragment extends Fragment implements TrendThisMonthRvIn
         popularDrinksRv.setLayoutManager(layoutManager);
 
         //setting the `polular drink` adapter
-        popularDrinksRvAdapter = new PopularDrinksRvAdapter(this.getContext(), (ArrayList<ProductResponseDTO>) popularDrinksDataSource, this);
+        popularDrinksRvAdapter = new PopularDrinksRvAdapter(this.getContext(), (ArrayList<ProductRespondeDTO>) popularDrinksDataSource, this);
         popularDrinksRv.setAdapter(popularDrinksRvAdapter);
         popularDrinksRv.setHasFixedSize(true);
 
@@ -73,7 +77,7 @@ public class OrderPopularFragment extends Fragment implements TrendThisMonthRvIn
     public void onItemClickPopularDrinks(int position) {
         Intent intent = new Intent(OrderPopularFragment.this.getContext(), CartActivity.class);
 
-        intent.putExtra("ProductOrder", popularDrinksDataSource.get(position));
+        intent.putExtra("ProductOrder", (Serializable) popularDrinksDataSource.get(position));
 
         startActivity(intent);
     }
@@ -82,20 +86,20 @@ public class OrderPopularFragment extends Fragment implements TrendThisMonthRvIn
     public void onItemClickTrendThisMonth(int position) {
         Intent intent = new Intent(OrderPopularFragment.this.getContext(), CartActivity.class);
 
-        intent.putExtra("ProductOrder", trendThisMonthDataSource.get(position));
+        intent.putExtra("ProductOrder", (Serializable) trendThisMonthDataSource.get(position));
 
 
         startActivity(intent);
     }
     public void getListCoffee(){
         coffeeApi = CoffeeService.getClient();
-        Call<List<ProductResponseDTO>> call = coffeeApi.getAllProduct();
-        call.enqueue(new Callback<List<ProductResponseDTO>>() {
+        Call<List<ProductRespondeDTO>> call = coffeeApi.getAllProduct();
+        call.enqueue(new Callback<List<ProductRespondeDTO>>() {
             @Override
-            public void onResponse(Call<List<ProductResponseDTO>> call, Response<List<ProductResponseDTO>> response) {
+            public void onResponse(Call<List<ProductRespondeDTO>> call, Response<List<ProductRespondeDTO>> response) {
                 if (response.isSuccessful()) {
                     //get response data for `popular drinks`
-                    List<ProductResponseDTO> responseDTOS = response.body();
+                    List<ProductRespondeDTO> responseDTOS = response.body();
                     popularDrinksDataSource = responseDTOS;
 
                     //get response data for `trend this month`
@@ -116,7 +120,7 @@ public class OrderPopularFragment extends Fragment implements TrendThisMonthRvIn
             }
 
             @Override
-            public void onFailure(Call<List<ProductResponseDTO>> call, Throwable throwable) {
+            public void onFailure(Call<List<ProductRespondeDTO>> call, Throwable throwable) {
                 System.out.println(throwable.getMessage());
             }
         });
