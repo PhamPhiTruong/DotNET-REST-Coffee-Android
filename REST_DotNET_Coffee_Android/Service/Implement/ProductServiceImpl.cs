@@ -195,7 +195,7 @@ public class ProductServiceImpl : AService<Product>, IProductService
             return null;
         }
 
-        return new ProductRespondeDTO
+        ProductRespondeDTO productJSONs = new ProductRespondeDTO
         {
             Id = id,
             Name = product.Name,
@@ -204,8 +204,28 @@ public class ProductServiceImpl : AService<Product>, IProductService
             AvatarUrl = product.AvatarUrl,
             BasePrice = Convert.ToDouble(product.BasePrice),
             CategoryId = Convert.ToInt32(product.CategoryId),
-            Quantities = Convert.ToInt32(product.Quantities)
+            Quantities = Convert.ToInt32(product.Quantities),
+            Ingredients = new List<IngredientRespondeDTO>()
         };
+
+        List<HavingIngredient> list = await _context.HavingIngredients.ToListAsync<HavingIngredient>();
+        for (int j = 0; j < list.Count; j++)
+        {
+            if (productJSONs.Id == list[j].ProductId)
+            {
+                //productJSONs[i].Ingredients.Add(await _context.Ingredients.FindAsync(list[j].IngredientId));
+                Ingredient ingredient = await _context.Ingredients.FindAsync(list[j].IngredientId);
+                IngredientRespondeDTO ingredientRespondeDTO = new IngredientRespondeDTO
+                {
+                    Name = ingredient.Name,
+                    AddPrice = ingredient.AddPrice,
+                    Type = ingredient.Type
+                };
+                productJSONs.Ingredients.Add(ingredientRespondeDTO);
+            }
+        }
+
+        return productJSONs;
     }
 
     //
