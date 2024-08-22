@@ -53,10 +53,11 @@ public class CartActivity extends AppCompatActivity {
     private BiConsumer<Integer, Boolean> onChooseItemHandler;
     private Runnable onCheckoutClickHandler;
     private Button btnCheckout;
+    DataStore dataStore;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        DataStore dataStore = DataStore.getInstance();
+        dataStore = DataStore.getInstance();
         EdgeToEdge.enable(this);
         //Định nghĩa các hàm EventHandler
         onDeleteHandler = (item, pos) -> {
@@ -195,7 +196,7 @@ public class CartActivity extends AppCompatActivity {
         List<OrderItemRequestDTO> list = new ArrayList<>();
         var arr = chooseSet.stream().collect(Collectors.toList());
         for (int i = 0; i < chooseSet.size(); i++) {
-            CartItemResponseDTO item = cartResponseDTO.getListItem().get(arr.get(i));
+            CartItemResponseDTO item = dataStore.getCart().getListItem().get(arr.get(i));
             OrderItemRequestDTO target = OrderItemRequestDTO.builder()
                                          .poductId(item.getProductId())
                                          .quantity(item.getQuantity())

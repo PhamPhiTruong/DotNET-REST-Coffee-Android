@@ -14,12 +14,10 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.nlu.packages.enums.EPaymentMethod;
 import com.nlu.packages.inventory.paymentmethod_recycle.RecycleViewPaymentMethodAdapter;
-import com.nlu.packages.request_dto.order.CreateOrderRequestDTO;
-import com.nlu.packages.response_dto.MessageResponseDTO;
-import com.nlu.packages.service.CoffeeService;
-import com.nlu.packages.utils.MyUtils;
+import com.nlu.packages.dotnet_callapi.requestdto.OrderRequestDTO;
+import com.nlu.packages.dotnet_callapi.responsedto.MessageRespondDTO;
+import com.nlu.packages.dotnet_callapi.service.CoffeeService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -30,9 +28,8 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class PaymentMethodActivity extends AppCompatActivity {
-    private EPaymentMethod method = null;
-    private Consumer<EPaymentMethod> onChoosePaymentHandler;
-    private long storeId = 1;
+    private String method = "";
+    private Consumer<String> onChoosePaymentHandler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,49 +40,42 @@ public class PaymentMethodActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        List<String> payMethods = new ArrayList<>();
+        payMethods.add("COD");
+        payMethods.add("MOMO");
+        payMethods.add("DebitCard");
 
         // Event handler
         onChoosePaymentHandler = (payment) -> {
             method = payment;
             System.out.println(method);
         };
-
-        List<EPaymentMethod> list = Arrays.asList(
-                EPaymentMethod.COD,
-                EPaymentMethod.MOMO,
-                EPaymentMethod.BANK_CART,
-                EPaymentMethod.CREDIT_CART
-        );
-        String token = MyUtils.get(this, "token");
         RecyclerView recyclerView = findViewById(R.id.paymentMethodRecycle);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new RecycleViewPaymentMethodAdapter(this, list, onChoosePaymentHandler));
+        recyclerView.setAdapter(new RecycleViewPaymentMethodAdapter(this, payMethods, onChoosePaymentHandler));
         double total = getIntent().getDoubleExtra("total",0.0);
         AppCompatButton button = findViewById(R.id.proceedButton);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ArrayList<Long> chooseIds = (ArrayList<Long>)
-                        getIntent().getSerializableExtra("chosenProductIds");
+                OrderRequestDTO orderReq = (OrderRequestDTO)
+                        getIntent().getSerializableExtra("chosenOrder");
                 if (method == null) {
                     Toast.makeText(PaymentMethodActivity.this, "Cần chọn 1 phương thức thanh toán",
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
-                else if (method == EPaymentMethod.COD) {
-                    CoffeeService
-                            .getRetrofitInstance(token).createOrder(CreateOrderRequestDTO
+                else if (method == "COD") {
+                    CoffeeService.getClient().createOrder(orderReq
                                     .builder()
-                                    .method(method)
-                                    .storeId(storeId)
-                                    .chosenProductIds(chooseIds)
+                                    .methodPay(method)
                                     .build()
-                            ).enqueue(new Callback<MessageResponseDTO>() {
+                            ).enqueue(new Callback<MessageRespondDTO>() {
                                 @Override
-                                public void onResponse(Call<MessageResponseDTO> call, Response<MessageResponseDTO> response) {
-                                    System.out.println(chooseIds);
-                                    System.out.println(method.name());
-                                    System.out.println(response.message());
+                                public void onResponse(Call<MessageRespondDTO> call, Response<MessageRespondDTO> response) {
+                                    System.out.println(orderReq);
+                                    System.out.println(method);
+                                    System.out.println(response.body().getMessage());
                                     System.out.println(response.errorBody());
                                     System.out.println(response.raw());
                                     if (response.isSuccessful()) {
@@ -94,7 +84,7 @@ public class PaymentMethodActivity extends AppCompatActivity {
                                 }
 
                                 @Override
-                                public void onFailure(Call<MessageResponseDTO> call, Throwable throwable) {
+                                public void onFailure(Call<MessageRespondDTO> call, Throwable throwable) {
                                     throw new RuntimeException(throwable);
                                 }
                             });
@@ -102,11 +92,9 @@ public class PaymentMethodActivity extends AppCompatActivity {
                 } else {
                     Intent intent = new Intent(PaymentMethodActivity.this,PaymentActivity.class);
                     intent.putExtra("total",total);
-                    intent.putExtra("requestDTO", CreateOrderRequestDTO
+                    intent.putExtra("orderReq", orderReq
                             .builder()
-                            .method(method)
-                            .storeId(storeId)
-                            .chosenProductIds(chooseIds)
+                            .methodPay(method)
                             .build()
                     );
                     startActivity(intent);

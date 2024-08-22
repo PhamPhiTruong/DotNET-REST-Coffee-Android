@@ -1,5 +1,6 @@
 package com.nlu.packages.dotnet_callapi.responsedto;
 
+import java.io.Serializable;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class OrderItemResponseDTO {
+public class OrderItemResponseDTO implements Serializable {
     private String productName;
     private List<String> ingredientList;
     private int quantity;

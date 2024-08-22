@@ -1,5 +1,6 @@
 package com.nlu.packages.dotnet_callapi.requestdto;
 
+import java.io.Serializable;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class OrderRequestDTO {
+public class OrderRequestDTO implements Serializable {
     private int userId;
     private String methodPay;
     private List<OrderItemRequestDTO> orderItems;

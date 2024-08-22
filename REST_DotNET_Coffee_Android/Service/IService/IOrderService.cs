@@ -2,6 +2,6 @@
 {
     Task<OrderResponseDTO> GetOrder(int userId);
 
-    Task<String> CreateOrder(OrderRequestDTO ord);
+    Task<MessageRespondDTO> CreateOrder(OrderRequestDTO ord);
 
 }

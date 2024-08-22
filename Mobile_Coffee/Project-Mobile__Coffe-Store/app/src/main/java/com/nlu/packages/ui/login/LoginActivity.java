@@ -16,9 +16,12 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import com.nlu.packages.MainActivity;
 import com.nlu.packages.R;
-import com.nlu.packages.request_dto.LoginRequestDTO;
-import com.nlu.packages.response_dto.TokenResponseDTO;
-import com.nlu.packages.service.CoffeeService;
+import com.nlu.packages.dotnet_callapi.dataStore.DataStore;
+import com.nlu.packages.dotnet_callapi.responsedto.TokenRespondeDTO;
+import com.nlu.packages.dotnet_callapi.requestdto.LoginRequestDTO;
+//import com.nlu.packages.request_dto.LoginRequestDTO;
+//import com.nlu.packages.response_dto.TokenResponseDTO;
+import com.nlu.packages.dotnet_callapi.service.CoffeeService;
 import com.nlu.packages.utils.MyUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,10 +32,11 @@ public class LoginActivity extends AppCompatActivity {
     AppCompatButton button1, button2, button3;
     EditText editText1,editText2;
     private Runnable onLoginHandler;
-
+    DataStore dataStore;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        dataStore = DataStore.getInstance();
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -67,12 +71,13 @@ public class LoginActivity extends AppCompatActivity {
                 CoffeeService.getClient().login(LoginRequestDTO.builder()
                                 .email(email)
                                 .password(password).build())
-                        .enqueue(new Callback<TokenResponseDTO>() {
+                        .enqueue(new Callback<TokenRespondeDTO>() {
                             @Override
-                            public void onResponse(Call<TokenResponseDTO> call, Response<TokenResponseDTO> response) {
+                            public void onResponse(Call<TokenRespondeDTO> call, Response<TokenRespondeDTO> response) {
                                 if (response.isSuccessful() && response.body().getToken() != null) {
                                     String token = response.body().getToken();
-                                    MyUtils.save(LoginActivity.this, "token", token);
+//                                    MyUtils.save(LoginActivity.this, "token", token);
+                                    dataStore.setUserId(Integer.valueOf(response.body().getToken()));
                                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                                 }
                                 else {
@@ -83,7 +88,7 @@ public class LoginActivity extends AppCompatActivity {
                             }
 
                             @Override
-                            public void onFailure(Call<TokenResponseDTO> call, Throwable throwable) {
+                            public void onFailure(Call<TokenRespondeDTO> call, Throwable throwable) {
                                 throw new RuntimeException(throwable);
                             }
                         });

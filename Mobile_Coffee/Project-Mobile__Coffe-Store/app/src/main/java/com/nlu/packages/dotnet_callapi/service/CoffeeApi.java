@@ -3,6 +3,7 @@ package com.nlu.packages.dotnet_callapi.service;
 import com.nlu.packages.dotnet_callapi.requestdto.CartItemRequestDTO;
 import com.nlu.packages.dotnet_callapi.requestdto.CartRequestDTO;
 import com.nlu.packages.dotnet_callapi.requestdto.LoginRequestDTO;
+import com.nlu.packages.dotnet_callapi.requestdto.OrderRequestDTO;
 import com.nlu.packages.dotnet_callapi.responsedto.CartResponseDTO;
 import com.nlu.packages.dotnet_callapi.responsedto.MessageRespondDTO;
 import com.nlu.packages.dotnet_callapi.responsedto.ProductRespondeDTO;
@@ -40,4 +41,7 @@ public interface CoffeeApi {
 
     @GET("/product/getProductById")
     Call<ProductRespondeDTO> getProduct(@Query("id") int id);
+
+    @PUT("order/createOrder")
+    Call<MessageRespondDTO> createOrder(@Body OrderRequestDTO ord);
 }

@@ -44,7 +44,6 @@ public class CartProductItemAdapter extends RecyclerView.Adapter<CartProductItem
                                   BiConsumer<Integer, Boolean> onChooseItemHandler){
         this.context = context;
         this.dataStore = DataStore.getInstance();
-        this.dataStore.setCart(cartResponseDTO);
         this.onDeleteHandler = onDeleteHandler;
         this.onChangeQuantityHandler = onChangeQuantityHandler;
         this.onChooseItemHandler = onChooseItemHandler;
@@ -102,7 +101,7 @@ public class CartProductItemAdapter extends RecyclerView.Adapter<CartProductItem
                 margins.topMargin = 0;
                 margins.bottomMargin = 0;
             }
-            textView_productName.setText(dataStore.getList().get(item.getItemId()-1).getName());
+            textView_productName.setText(dataStore.getList().get(item.getProductId()-1).getName());
             Picasso.get().load(dataStore.getList().get(item.getItemId()-1).getAvatarUrl())
                     .resize(100, 100)
                     .transform(new RoundedCornersTransformation(10, 0))
@@ -127,7 +126,6 @@ public class CartProductItemAdapter extends RecyclerView.Adapter<CartProductItem
         }
     }
     public void redraw(CartResponseDTO responseDTO) {
-        dataStore.setCart(responseDTO);
         notifyDataSetChanged();
     }
 }

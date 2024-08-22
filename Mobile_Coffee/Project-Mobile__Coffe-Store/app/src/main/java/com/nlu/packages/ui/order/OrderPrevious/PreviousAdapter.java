@@ -10,7 +10,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.nlu.packages.R;
-import com.nlu.packages.response_dto.order.OrderResponseDTO;
+import com.nlu.packages.dotnet_callapi.dataStore.DataStore;
+import com.nlu.packages.dotnet_callapi.responsedto.OrderItemResponseDTO;
+import com.nlu.packages.dotnet_callapi.responsedto.OrderResponseDTO;
+
 import com.nlu.packages.response_dto.product.ProductResponseDTO;
 import com.squareup.picasso.Picasso;
 import lombok.var;
@@ -35,14 +38,14 @@ public class PreviousAdapter extends RecyclerView.Adapter<PreviousAdapter.MyHold
     @Override
     public void onBindViewHolder(@NonNull MyHolder holder, int position) {
         var list = data == null ?
-                new ArrayList<OrderResponseDTO.OrderItemDTO>() : data.getList();
+                new ArrayList<OrderItemResponseDTO>() : data.getItemOrderList();
         holder.renderView(list.get(position));
     }
 
     @Override
     public int getItemCount() {
         var list = data == null ?
-                new ArrayList<OrderResponseDTO.OrderItemDTO>() : data.getList();
+                new ArrayList<OrderItemResponseDTO>() : data.getItemOrderList();
         return list.size();
     }
 
@@ -51,20 +54,21 @@ public class PreviousAdapter extends RecyclerView.Adapter<PreviousAdapter.MyHold
         TextView priceTitle;
         ImageView imageView1;
         Button reorderButton;
-
+        DataStore dataStore;
         public MyHolder(@NonNull View itemView) {
             super(itemView);
             nameProduct = itemView.findViewById(R.id.orderTitle);
             imageView1 = itemView.findViewById(R.id.orderImage);
             reorderButton = itemView.findViewById(R.id.reorderButton);
             priceTitle = itemView.findViewById(R.id.priceTitle);
+            dataStore = DataStore.getInstance();
         }
 
-        public void renderView(OrderResponseDTO.OrderItemDTO orderItemDTO) {
+        public void renderView(OrderItemResponseDTO orderItemDTO) {
             if (orderItemDTO == null) return;
-            nameProduct.setText(orderItemDTO.getProduct().getProductName());
+            nameProduct.setText(orderItemDTO.getProductName());
             Picasso.get()
-                    .load(orderItemDTO.getProduct().getAvatar())
+                    .load(dataStore.getList().get(data.getItemOrderList().indexOf(orderItemDTO)-1).getAvatarUrl())
                     .into(imageView1);
             priceTitle.setText(orderItemDTO.getPrice()+"đ");
         }

@@ -1,5 +1,7 @@
 package com.nlu.packages.dotnet_callapi.requestdto;
 
+import java.io.Serializable;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class LoginRequestDTO {
+public class LoginRequestDTO implements Serializable {
     private String email;
     private String password;
 }

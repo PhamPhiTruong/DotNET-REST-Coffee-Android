@@ -26,7 +26,7 @@ public class OrderServiceImpl : AService<Order>, IOrderService
     //
     // Remarks:
     //     See Using CreateOrder for more information and examples.
-    public async Task<String> CreateOrder(OrderRequestDTO ord)
+    public async Task<MessageRespondDTO> CreateOrder(OrderRequestDTO ord)
     {
         try
         {
@@ -138,10 +138,17 @@ public class OrderServiceImpl : AService<Order>, IOrderService
             _context.Orders.Update(order);
             await _context.SaveChangesAsync();
 
-            return "Order created successfully";
+            return new MessageRespondDTO
+            {
+                Message = "Order created successfully"
+            };
         }
         catch (Exception ex) {
-            return $"Failed to create order: {ex.Message}." + ex.InnerException;
+             
+            return new MessageRespondDTO
+            {
+                Message = $"Failed to create order: {ex.Message}." + ex.InnerException
+            };
         }              
     }
 

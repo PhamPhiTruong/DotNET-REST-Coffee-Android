@@ -9,7 +9,6 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.nlu.packages.R;
-import com.nlu.packages.enums.EPaymentMethod;
 import lombok.var;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,12 +18,12 @@ import java.util.function.Consumer;
 public class RecycleViewPaymentMethodAdapter
         extends RecyclerView.Adapter<RecycleViewPaymentMethodAdapter.PaymentMethodViewHolder> {
     Activity context;
-    List<EPaymentMethod> list;
+    List<String> list;
     private int chooseMethod = -1;
-    private Consumer<EPaymentMethod> onChooseHandler;
+    private Consumer<String> onChooseHandler;
     public RecycleViewPaymentMethodAdapter(Activity context,
-                                           List<EPaymentMethod> list,
-                                           Consumer<EPaymentMethod> onChooseHandler) {
+                                           List<String> list,
+                                           Consumer<String> onChooseHandler) {
         this.context = context;
         this.list = list;
         this.onChooseHandler = onChooseHandler;
@@ -55,8 +54,8 @@ public class RecycleViewPaymentMethodAdapter
             this.paymentMethodButton = itemView.findViewById(R.id.methodPayOptionButton);
         }
 
-        public void renderView(EPaymentMethod ePaymentMethod, int pos) {
-            this.paymentMethodButton.setText(ePaymentMethod.toString());
+        public void renderView(String paymentMethod, int pos) {
+            this.paymentMethodButton.setText(paymentMethod);
             if (pos == chooseMethod) {
                 int color1 = ContextCompat.getColor(context, R.color.Secondary);
                 paymentMethodButton.setBackgroundColor(color1);
@@ -70,7 +69,7 @@ public class RecycleViewPaymentMethodAdapter
             }
             this.paymentMethodButton.setOnClickListener((_v) -> {
                 chooseMethod = pos;
-                onChooseHandler.accept(ePaymentMethod);
+                onChooseHandler.accept(paymentMethod);
                 RecycleViewPaymentMethodAdapter.this.notifyDataSetChanged();
             });
         }

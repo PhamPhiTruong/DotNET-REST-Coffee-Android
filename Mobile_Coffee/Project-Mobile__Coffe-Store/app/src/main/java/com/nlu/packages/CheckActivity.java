@@ -2,6 +2,7 @@ package com.nlu.packages;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -13,8 +14,14 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.nlu.packages.dotnet_callapi.dataStore.DataStore;
+import com.nlu.packages.dotnet_callapi.requestdto.OrderItemRequestDTO;
+import com.nlu.packages.dotnet_callapi.requestdto.OrderRequestDTO;
+import com.nlu.packages.dotnet_callapi.responsedto.OrderResponseDTO;
 import com.nlu.packages.inventory.checkout_recycle.CheckOutSummaryAdapter;
-import com.nlu.packages.response_dto.cart.CartResponseDTO;
+import com.nlu.packages.dotnet_callapi.responsedto.CartResponseDTO;
+import com.nlu.packages.dotnet_callapi.responsedto.CartItemResponseDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +30,12 @@ import java.util.stream.Collectors;
 public class CheckActivity extends AppCompatActivity {
     AppCompatButton deliveryButton ;
     AppCompatButton takeawayButton ;
+    DataStore dataStore;
     double total;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        dataStore = DataStore.getInstance();
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_check);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -35,16 +44,14 @@ public class CheckActivity extends AppCompatActivity {
             return insets;
         });
 
-        List<CartResponseDTO.CartItemDTO> list =  (List<CartResponseDTO.CartItemDTO>) getIntent().getSerializableExtra("chooseList");
+        List<OrderItemRequestDTO> list =  (List<OrderItemRequestDTO>) getIntent().getSerializableExtra("chooseList");
+        System.out.println(list);
         RecyclerView recyclerView = findViewById(R.id.recycleOrderSummary);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        //-> Thay đổi được
-//        recyclerView.setAdapter(new CheckOutSummaryAdapter(this,list));
         recyclerView.setAdapter(new CheckOutSummaryAdapter(this, list));
-        //<- Thay đổi được
         total = 0;
-        for (CartResponseDTO.CartItemDTO bu : list){
-            total += bu.getPrice();
+        for (OrderItemRequestDTO oir : list) {
+            total += dataStore.getCart().getListItem().get(list.indexOf(oir)).getPreTotal();
         }
         //<- Thay đổi được
         TextView subtotal = findViewById(R.id.subtotal);
@@ -56,10 +63,9 @@ public class CheckActivity extends AppCompatActivity {
         button.setOnClickListener(v -> {
             Intent intent = new Intent(CheckActivity.this, PaymentMethodActivity.class);
             intent.putExtra("total",total);
-            ArrayList<Long> chooseIds = (ArrayList<Long>) list.stream()
-                    .map(item -> item.getProduct().getId())
-                            .collect(Collectors.toList());;
-            intent.putExtra("chosenProductIds", chooseIds);
+            System.out.println("This user id"+ dataStore.getUserId());
+            OrderRequestDTO ord1 = OrderRequestDTO.builder().userId(dataStore.getUserId()).orderItems(list).build();
+            intent.putExtra("chosenOrder", ord1);
             startActivity(intent);
         });
 

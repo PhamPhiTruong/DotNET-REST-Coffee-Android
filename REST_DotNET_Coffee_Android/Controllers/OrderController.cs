@@ -21,13 +21,10 @@ public class OrderController : ControllerBase
     }
 
     [HttpPut("createOrder/")]
-    public async Task<string> Order([FromBody] OrderRequestDTO orderRequestDTO)
+    public async Task<MessageRespondDTO> Order([FromBody] OrderRequestDTO orderRequestDTO)
     { 
-        // Tạo đơn hàng thông qua dịch vụ
-        string result = await _orderService.CreateOrder(orderRequestDTO);
-
         // Trả kết quả
-        return result;
+        return await _orderService.CreateOrder(orderRequestDTO);
     }
 }
 

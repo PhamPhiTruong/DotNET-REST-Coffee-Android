@@ -1,5 +1,6 @@
 package com.nlu.packages.dotnet_callapi.responsedto;
 
+import java.io.Serializable;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CartResponseDTO {
+public class CartResponseDTO implements Serializable {
     private List<CartItemResponseDTO> listItem;
     public double getTotal() {
         double result = 0;

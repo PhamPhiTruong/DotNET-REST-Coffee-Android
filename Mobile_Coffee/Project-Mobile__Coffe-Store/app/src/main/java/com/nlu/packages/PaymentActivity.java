@@ -12,10 +12,10 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import com.nlu.packages.request_dto.order.CreateOrderRequestDTO;
-import com.nlu.packages.response_dto.MessageResponseDTO;
-import com.nlu.packages.service.CoffeeService;
-import com.nlu.packages.utils.MyUtils;
+import com.nlu.packages.dotnet_callapi.requestdto.OrderRequestDTO;
+import com.nlu.packages.dotnet_callapi.responsedto.MessageRespondDTO;
+import com.nlu.packages.dotnet_callapi.service.CoffeeService;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -32,9 +32,9 @@ public class PaymentActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        String token = MyUtils.get(this, "token");
-        CreateOrderRequestDTO dto = (CreateOrderRequestDTO)
-                getIntent().getSerializableExtra("requestDTO");
+
+        OrderRequestDTO dto = (OrderRequestDTO)
+                getIntent().getSerializableExtra("orderReq");
         ImageButton goBack = findViewById(R.id.goBackButton);
         goBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,9 +49,9 @@ public class PaymentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 CoffeeService
-                        .getRetrofitInstance(token).createOrder(dto).enqueue(new Callback<MessageResponseDTO>() {
+                        .getClient().createOrder(dto).enqueue(new Callback<MessageRespondDTO>() {
                             @Override
-                            public void onResponse(Call<MessageResponseDTO> call, Response<MessageResponseDTO> response) {
+                            public void onResponse(Call<MessageRespondDTO> call, Response<MessageRespondDTO> response) {
                                 if (response.isSuccessful()) {
                                     Toast.makeText(PaymentActivity.this, response.body().getMessage(),
                                             Toast.LENGTH_SHORT).show();
@@ -61,7 +61,7 @@ public class PaymentActivity extends AppCompatActivity {
                             }
 
                             @Override
-                            public void onFailure(Call<MessageResponseDTO> call, Throwable throwable) {
+                            public void onFailure(Call<MessageRespondDTO> call, Throwable throwable) {
                                 throw new RuntimeException(throwable);
                             }
                         });

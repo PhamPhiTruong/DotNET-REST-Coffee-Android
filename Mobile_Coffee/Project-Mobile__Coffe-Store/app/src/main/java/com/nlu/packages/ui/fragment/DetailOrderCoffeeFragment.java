@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.nlu.packages.R;
 import com.nlu.packages.dotnet_callapi.dataStore.DataStore;
 import com.nlu.packages.dotnet_callapi.requestdto.CartRequestDTO;
+import com.nlu.packages.dotnet_callapi.responsedto.IngredientRespondeDTO;
 import com.nlu.packages.dotnet_callapi.responsedto.MessageRespondDTO;
 import com.nlu.packages.dotnet_callapi.responsedto.ProductRespondeDTO;
 import com.nlu.packages.dotnet_callapi.service.CoffeeService;
@@ -31,13 +32,11 @@ import java.util.List;
 import java.util.Map;
 
 public class DetailOrderCoffeeFragment extends Fragment {
-
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
     private String mParam1;
     private String mParam2;
-    private Spinner spnSize;
     private Spinner spnMilk;
     private Spinner spnSweet;
     private Spinner spnToppings;
@@ -55,6 +54,8 @@ public class DetailOrderCoffeeFragment extends Fragment {
     public static List<String> milks = new ArrayList<>();
     public static List<String> toppings = new ArrayList<>();
     public static List<String> sweeteners = new ArrayList<>();
+
+    public Map<String, Double> priceMap = new HashMap<>();
 
     public DetailOrderCoffeeFragment() {
         // Required empty public constructor
@@ -86,11 +87,12 @@ public class DetailOrderCoffeeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         dataStore = DataStore.getInstance();
         productPicture = view.findViewById(R.id.productPicture);
         productName = view.findViewById(R.id.productName);
         priceProduct = view.findViewById(R.id.priceProduct);
-        spnSize = view.findViewById(R.id.spinner_size);
+
         spnMilk = view.findViewById(R.id.spinner_milk);
         spnToppings = view.findViewById(R.id.spinner_decaf);
         spnSweet = view.findViewById(R.id.spinner_sweet);
@@ -100,6 +102,18 @@ public class DetailOrderCoffeeFragment extends Fragment {
         priceTotal = view.findViewById(R.id.priceTrueTotalProduct);
         addToCartButton = view.findViewById(R.id.addToCartButton);
 
+        priceMap.put("Sữa tươi", 5.0);
+        priceMap.put("Chocolate",10.0);
+        priceMap.put("Thạch dừa",10.0);
+        priceMap.put("Nhiều đường",0.0);
+        priceMap.put("Ít đường", 0.0);
+        priceMap.put("Trân châu", 10.0);
+        priceMap.put("Kem tươi",10.0);
+        priceMap.put("Shot Expresso",10.0);
+        priceMap.put("Sốt Caramel",10.0);
+        priceMap.put("",0.0);
+
+
         productTaken = (ProductRespondeDTO) getActivity().getIntent().getSerializableExtra("productOrder");
 
         addToCartButton.setOnClickListener(btn -> {
@@ -107,6 +121,7 @@ public class DetailOrderCoffeeFragment extends Fragment {
                     .enqueue(new Callback<MessageRespondDTO>() {
                         @Override
                         public void onResponse(Call<MessageRespondDTO> call, Response<MessageRespondDTO> response) {
+                            System.out.println(response.body().getMessage());
                             Intent intent = new Intent(getActivity(), CartActivity.class);
                             startActivity(intent);
                         }
@@ -146,28 +161,22 @@ public class DetailOrderCoffeeFragment extends Fragment {
         milks.clear();
         toppings.clear();
         sweeteners.clear();
-//        for (ProductResponseDTO.ProductSizeDTO size : product.getAvailableSizes()) {
-//            sz.add(size.getSizeEnum().name());
-//            sz_Map.put(size.getSizeEnum().name(), size.getSizeEnum());
-//        }
 
-//        for (ProductResponseDTO.IngredientDTO ingredient : product.getAvailableIngredients()) {
-//            switch (ingredient.getIngredientType()) {
-//                case MILKS:
-//                    milks.add(ingredient.getIngredientName());
-//                    milks_Map.put(ingredient.getIngredientName(), ingredient);
-//                    break;
-//                case TOPPINGS:
-//                    toppings.add(ingredient.getIngredientName());
-//                    toppings_Map.put(ingredient.getIngredientName(), ingredient);
-//                    break;
-//                case SWEETENERS:
-//                    sweeteners.add(ingredient.getIngredientName());
-//                    sweeteners_Map.put(ingredient.getIngredientName(), ingredient);
-//                    break;
-//            }
-//            calculatePrice(products.get(0));
-//        }
+
+        for (IngredientRespondeDTO ingredient : productTaken.getIngredients()) {
+            switch (ingredient.getType()) {
+                case "MILKS":
+                    milks.add(ingredient.getName());
+                    break;
+                case "TOPPINGS":
+                    toppings.add(ingredient.getName());
+                    break;
+                case "SWEETENERS":
+                    sweeteners.add(ingredient.getName());
+                    break;
+            }
+            calculatePrice(productTaken);
+        }
 
         var spinEvent = new AdapterView.OnItemSelectedListener() {
 
@@ -182,12 +191,12 @@ public class DetailOrderCoffeeFragment extends Fragment {
             }
         };
 
-        spnSize.setOnItemSelectedListener(spinEvent);
+
         spnMilk.setOnItemSelectedListener(spinEvent);
         spnToppings.setOnItemSelectedListener(spinEvent);
         spnSweet.setOnItemSelectedListener(spinEvent);
 
-        setSpinnerAdapter(spnSize, sz);
+
         setSpinnerAdapter(spnMilk, milks);
         setSpinnerAdapter(spnToppings, toppings);
         setSpinnerAdapter(spnSweet, sweeteners);
@@ -225,20 +234,40 @@ public class DetailOrderCoffeeFragment extends Fragment {
     }
 
     public void calculatePrice(ProductRespondeDTO dto) {
-        var txtSize = ((TextView) spnSize.getSelectedView());
-        String sizeStr = txtSize != null ? txtSize.getText().toString() : null;
+        double totalTruePrice = 0;
 
         var txtMilk = ((TextView)spnMilk.getSelectedView());
-        String milk = txtMilk != null ? txtMilk.getText().toString() : null;
+        String milk = txtMilk != null ? txtMilk.getText().toString() : "";
+        totalTruePrice += priceMap.getOrDefault(milk, 0.0);
 
         var txtSweet = ((TextView)spnSweet.getSelectedView());
-        String sweet = txtSweet != null ? txtSweet.getText().toString() : null;
+        String sweet = txtSweet != null ? txtSweet.getText().toString() : "";
+        totalTruePrice += priceMap.getOrDefault(sweet, 0.0);
 
         var txtTopping = ((TextView)spnToppings.getSelectedView());
-        String topping = txtTopping != null ? txtTopping.getText().toString() : null;
+        String topping = txtTopping != null ? txtTopping.getText().toString() : "";
+        totalTruePrice += priceMap.getOrDefault(topping, 0.0);
 
         int quantity = Integer.valueOf(quantityText.getText().toString());
 
-        priceTotal.setText("00đ");
+        totalTruePrice = totalTruePrice*quantity;
+
+        priceTotal.setText(totalTruePrice+"00đ");
+
+        List<String> ingredients = new ArrayList<>();
+        ingredients.add(milk);
+        ingredients.add(sweet);
+        if(topping!=""){
+            ingredients.add(topping);
+        }
+
+        requestDTO = CartRequestDTO.builder()
+                .userId(dataStore.getUserId())
+                .ingredientList(ingredients)
+                .quantity(quantity)
+                .productId(productTaken.getId())
+                .preTotal(totalTruePrice)
+                .build();
+
     }
 }

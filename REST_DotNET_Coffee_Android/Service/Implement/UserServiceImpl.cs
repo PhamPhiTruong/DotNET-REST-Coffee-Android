@@ -157,7 +157,7 @@ public class UserServiceImpl : AService<User>, IUserService
         return new TokenRespondeDTO
         {
             Message = "Login successfully.",
-            Token = "Feature on working, please come back later."
+            Token = user.Id + ""
         };
     }
 
