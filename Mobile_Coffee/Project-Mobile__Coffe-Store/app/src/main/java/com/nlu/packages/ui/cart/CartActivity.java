@@ -84,7 +84,7 @@ public class CartActivity extends AppCompatActivity {
         };
         onLoadHandler = () -> {
             CoffeeService.getClient()
-                    .getCart(1)
+                    .getCart(dataStore.getUserId())
                     .enqueue(new Callback<CartResponseDTO>() {
                         @Override
                         public void onResponse(Call<CartResponseDTO> call, Response<CartResponseDTO> response) {

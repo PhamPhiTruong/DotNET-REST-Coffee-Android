@@ -74,6 +74,7 @@ public class PaymentMethodActivity extends AppCompatActivity {
                                 @Override
                                 public void onResponse(Call<MessageRespondDTO> call, Response<MessageRespondDTO> response) {
                                     System.out.println(orderReq);
+                                    System.out.println("Hello"+orderReq.getUserId());
                                     System.out.println(method);
                                     System.out.println(response.body().getMessage());
                                     System.out.println(response.errorBody());

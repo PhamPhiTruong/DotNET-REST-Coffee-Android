@@ -49,7 +49,7 @@ public class OrderServiceImpl : AService<Order>, IOrderService
             var payment = await _context.PaymentMethods.FirstOrDefaultAsync(pm => pm.Name.Equals(ord.MethodPay));
 
             int paymentId = payment.Id;
-
+            
             // Check valid payment id
             if (paymentId <= 0)
             {
@@ -144,7 +144,8 @@ public class OrderServiceImpl : AService<Order>, IOrderService
             };
         }
         catch (Exception ex) {
-             
+            Console.WriteLine(ord.UserId);
+            Console.WriteLine(ord.MethodPay);
             return new MessageRespondDTO
             {
                 Message = $"Failed to create order: {ex.Message}." + ex.InnerException

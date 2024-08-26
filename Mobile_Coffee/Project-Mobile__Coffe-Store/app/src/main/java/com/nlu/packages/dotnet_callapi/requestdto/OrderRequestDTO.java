@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class OrderRequestDTO implements Serializable {
+public class OrderRequestDTO implements Serializable                  {
     private int userId;
     private String methodPay;
     private List<OrderItemRequestDTO> orderItems;

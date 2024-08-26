@@ -102,7 +102,7 @@ public class CartProductItemAdapter extends RecyclerView.Adapter<CartProductItem
                 margins.bottomMargin = 0;
             }
             textView_productName.setText(dataStore.getList().get(item.getProductId()-1).getName());
-            Picasso.get().load(dataStore.getList().get(item.getItemId()-1).getAvatarUrl())
+            Picasso.get().load(dataStore.getList().get(item.getProductId()-1).getAvatarUrl())
                     .resize(100, 100)
                     .transform(new RoundedCornersTransformation(10, 0))
                     .into(imageView_productAvatar);
